@@ -1,0 +1,78 @@
+{
+  "projectType": "saas",
+  "projectName": "Warmr",
+  "projectDescription": "A Mac app that automates iPhone farm management — warming up social accounts and auto-posting to TikTok, Instagram, X, and LinkedIn on a schedule.",
+  "theme": "almond",
+  "primaryColor": "#cafa3b",
+  "lightColor": "#647c24",
+  "darkColor": "#0e080c",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guide",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/account-lifecycle",
+              "concepts/warmup",
+              "concepts/cloud-drop",
+              "concepts/scheduling"
+            ]
+          },
+          {
+            "group": "Setup",
+            "pages": [
+              "setup/iphones",
+              "setup/proxies",
+              "setup/adding-accounts",
+              "setup/posting-schedule"
+            ]
+          },
+          {
+            "group": "Platforms",
+            "pages": [
+              "platforms/tiktok",
+              "platforms/instagram",
+              "platforms/x-linkedin"
+            ]
+          },
+          {
+            "group": "Plans & Billing",
+            "pages": [
+              "billing/plans",
+              "billing/license-key",
+              "billing/faq"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Shadowban-safe account warmup (scroll, like, follow, search phases)",
+    "Auto-posting to TikTok, Instagram, X, and LinkedIn on schedule",
+    "Cloud Drop — upload content from phone or laptop, Mac pulls and posts",
+    "Drives real iPhones via on-screen taps (no APIs or emulators)",
+    "One Mac controls 10+ iPhones simultaneously with double-post locks",
+    "Auto-resume after device stalls or Mac reboots via checkpointed state",
+    "Carousels and music support",
+    "Free 7-day trial, no credit card required"
+  ],
+  "publicApiSurface": [
+    "License key activation",
+    "Cloud Drop upload queue",
+    "Posting schedule configuration",
+    "Account warmup cycle management",
+    "Device (iPhone) activation per plan",
+    "Per-account proxy / IP assignment"
+  ]
+}

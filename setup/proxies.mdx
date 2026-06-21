@@ -1,0 +1,58 @@
+---
+title: "Configure proxies for your Warmr accounts"
+sidebarTitle: "Proxies"
+description: "Assign a unique IP address to each social account in Warmr to reduce shadowban risk and keep your farm running safely at scale."
+---
+
+Every account in your farm needs its own network identity. When multiple accounts share a single home IP address, platforms quickly detect the pattern and flag or ban those accounts — sometimes within hours. Proxies solve this by giving each account a distinct IP that looks like an independent, real-world mobile user. Getting proxy configuration right is one of the most important steps in building a healthy, long-running farm.
+
+## Recommended proxy types
+
+<CardGroup cols={3}>
+  <Card title="4G Mobile Proxies" icon="signal">
+    The gold standard. Traffic routes through a real mobile network, which is indistinguishable from a genuine phone browsing on cellular data. Use these whenever possible.
+  </Card>
+  <Card title="Residential Proxies" icon="house">
+    A strong alternative. IPs are assigned to real home connections, so they appear legitimate to platform detection systems. Choose providers with large, frequently rotated pools.
+  </Card>
+  <Card title="SIM Card per Device" icon="sim-card">
+    Ideal for hardware farms. Each iPhone uses its own SIM for mobile data, providing a unique carrier IP with no third-party proxy service required.
+  </Card>
+</CardGroup>
+
+## What NOT to use
+
+Avoid the following proxy types — they are well-known to platform trust-and-safety systems and will increase your flag rate significantly:
+
+- **Datacenter proxies** — IP ranges are publicly listed and trivially blocked
+- **Shared proxies** — multiple users share the same IP, creating cross-contamination risk
+- **Free proxies** — unreliable, frequently abused, and often already blacklisted
+
+## Assign a proxy to an account
+
+<Steps>
+  <Step title="Open Warmr and select an account">
+    In the **Devices** panel, click the account you want to configure.
+  </Step>
+  <Step title="Open account Settings and find the Proxy section">
+    Navigate to the account's **Settings** tab. Scroll to the **Proxy** section.
+  </Step>
+  <Step title="Enter your proxy credentials">
+    Fill in the **host**, **port**, **username**, and **password** provided by your proxy service.
+  </Step>
+  <Step title="Save and verify">
+    Click **Save**. Warmr immediately routes all traffic for that account through the proxy. You can verify the assigned IP is active from the same settings screen.
+  </Step>
+</Steps>
+
+<Tip>
+  If you have one iPhone per SIM card, you may not need a third-party proxy at all — the SIM provides a unique mobile IP for every account on that device. Check with your carrier about data plans for running multiple SIMs simultaneously.
+</Tip>
+
+<Warning>
+  Never assign the same proxy IP to more than one account. IP collisions are one of the most common causes of account flags at scale. Each account must have its own dedicated IP.
+</Warning>
+
+<Note>
+  Not sure which proxy service to use or how to configure it? Book a free setup call from [warmr.so](https://warmr.so). We walk you through the exact providers and settings that work well with Warmr.
+</Note>

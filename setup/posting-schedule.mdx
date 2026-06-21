@@ -1,0 +1,62 @@
+---
+title: "Configure your Warmr posting schedule"
+sidebarTitle: "Posting Schedule"
+description: "Set time slots for each account and Warmr auto-fills them with your queued content, including a warmup wrapper before and after each post."
+---
+
+Warmr uses a slot-based scheduling system — you define the times of day you want an account to post, and Warmr handles everything else. It pulls content from your queue in order, wraps each post in warmup activity, and locks each slot once it is claimed to prevent double-posting. You do not need to babysit the schedule; once slots are set and content is queued, Warmr runs autonomously.
+
+## How scheduling works
+
+You assign one or more **time slots** to each account. At each scheduled time, Warmr:
+
+1. Runs warmup activity (scrolling, liking, following) **before** the post to simulate natural pre-posting behaviour
+2. Posts the next piece of content from the account's queue
+3. Runs a second warmup pass **after** the post to replicate how a real user behaves following a publish
+
+Slots are locked as soon as they are claimed, so there is no risk of the same content going out twice even if Warmr restarts mid-session.
+
+## Set a posting schedule
+
+<Steps>
+  <Step title="Select an account in Warmr">
+    Open the **Devices** panel and click the account you want to schedule.
+  </Step>
+  <Step title="Go to Schedule">
+    Click the **Schedule** tab within the account view.
+  </Step>
+  <Step title="Add a time slot">
+    Click **+** and choose a time from the picker — for example, **9:00 AM**. The slot appears in the schedule grid.
+  </Step>
+  <Step title="Add more slots as needed">
+    Repeat the previous step for each posting window you want. A typical setup might be **9 AM**, **2 PM**, and **8 PM** for three posts per day.
+  </Step>
+  <Step title="Save your schedule">
+    Click **Save**. Warmr begins filling those slots from the content queue at the next scheduled time, provided the account has matured and content is available.
+  </Step>
+</Steps>
+
+## Managing your content queue
+
+<CardGroup cols={2}>
+  <Card title="Cloud Drop" icon="cloud-arrow-up">
+    Upload content directly from your phone or laptop to the Warmr cloud. Content drops into the queue automatically and is distributed across accounts in the posting rotation.
+  </Card>
+  <Card title="Direct from Mac" icon="desktop">
+    Drag content files straight into Warmr on your Mac to add them to an account's queue. Useful for precise, per-account content control.
+  </Card>
+</CardGroup>
+
+<Tip>
+  Three to four posting slots per day per account is a healthy cadence for most platforms. Avoid scheduling posts less than two hours apart — platforms can interpret rapid repeat posting as inauthentic behaviour.
+</Tip>
+
+<Note>
+  If no content is queued for a slot, Warmr skips the post for that slot but still runs the warmup activity. Your account stays active and healthy even when the queue is temporarily empty.
+</Note>
+
+<Warning>
+  Accounts that have not matured through warmup are excluded from the posting rotation automatically. Do not attempt to manually trigger posts on warming accounts — doing so can result in early bans and will not override Warmr's maturity check.
+</Warning>
+
+For a deeper look at how slots, queues, and rotation interact, see [Scheduling Concepts](/concepts/scheduling). To learn more about uploading content via Cloud Drop, see [Cloud Drop](/concepts/cloud-drop).

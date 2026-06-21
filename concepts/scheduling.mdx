@@ -1,0 +1,51 @@
+---
+title: "Posting schedules and time slot management"
+sidebarTitle: "Scheduling"
+description: "Configure posting time slots per account and Warmr fills them automatically, including warmup activity before and after each post."
+---
+
+Warmr's scheduler removes the need to manually trigger posts or babysit your iPhone farm. You define the time slots you want — say, 9 AM, 3 PM, and 8 PM — and Warmr fills them with queued content automatically, handling warmup, posting, and cooldown in one unattended cycle. Your job is to set the schedule once and keep the content queue stocked.
+
+## How scheduling works
+
+You configure time slots at the account level or the iPhone level, depending on how you've organized your farm. Each slot is a reserved window when Warmr will execute one full post cycle for that account. When a slot opens, Warmr checks the queue, pulls the next piece of content, and runs the complete sequence: warmup activity, post upload, and post-post warmup.
+
+Slots can be assigned uniformly across all accounts on a device or customized per account, so you can stagger output across your farm to avoid a burst of simultaneous posts from the same IP.
+
+## What happens inside a slot
+
+Each posting slot is not just an upload — it's a structured session:
+
+<Steps>
+  <Step title="Pre-post warmup">
+    Before the post goes out, Warmr runs a warmup session on the account — scrolling, liking, and engaging naturally. This primes the account's recent activity log so the post lands in an active-looking session.
+  </Step>
+  <Step title="Post upload">
+    Warmr navigates to the post creation screen, enters your caption and settings, and submits the post using real on-screen taps on your iPhone.
+  </Step>
+  <Step title="Post-post warmup">
+    After uploading, Warmr continues the session with additional warmup activity. This ensures the account doesn't go cold immediately after posting, which can look anomalous to platform classifiers.
+  </Step>
+</Steps>
+
+## No double-posting guarantee
+
+When multiple iPhones run simultaneously, Warmr uses slot locks to prevent two accounts from being assigned the same content or two sessions from colliding on the same device. Each lock is claimed before a session begins and released when it ends, so conflicts are impossible even when your entire farm is active at once.
+
+## Auto-resume after stalls and reboots
+
+Warmr checkpoints its state to disk continuously. If a session stalls mid-upload — because an app crashed, the iPhone locked up, or your Mac rebooted — Warmr detects the incomplete state on restart and picks up from the last checkpoint. You don't lose the post, and the slot gets retried cleanly.
+
+## Scaling across accounts and iPhones
+
+Each iPhone supports up to 8 accounts per platform. All of those accounts can share a posting schedule, with Warmr managing sequencing so they don't step on each other. As you add more iPhones to your farm, the total scheduling capacity scales with it.
+
+<Tip>
+  Spread posting slots across the day rather than clustering them. Platforms respond better to natural-looking cadence.
+</Tip>
+
+<Note>
+  If a post fails (e.g., the app layout changed), Warmr logs the error and retries on the next slot. Layout patches ship within 24–48 hours of a platform update.
+</Note>
+
+To configure your first posting schedule, see the [Posting Schedule setup guide](/setup/posting-schedule).

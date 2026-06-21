@@ -1,0 +1,55 @@
+---
+title: "Set up and connect iPhones to Warmr"
+sidebarTitle: "iPhones"
+description: "Connect physical iPhones to your Mac via USB, register them in Warmr, and prepare each device to run warmup and posting sessions."
+---
+
+Warmr runs on real, physical iPhones — no emulators, cloud phones, or virtual devices. It drives each iPhone through on-screen taps via iOS automation, which means genuine hardware is a hard requirement. Once your iPhones are connected and trusted, Warmr tracks each device independently so you can manage an entire farm from a single Mac.
+
+## What you need
+
+- Physical iPhones (any model running a recent version of iOS)
+- A Mac with Warmr installed
+- USB cables, or a powered USB hub if you are connecting four or more devices
+
+## Connect an iPhone
+
+<Steps>
+  <Step title="Plug the iPhone into your Mac via USB">
+    Use a Lightning or USB-C cable depending on your iPhone model. Connect directly to your Mac or through a powered USB hub.
+  </Step>
+  <Step title="Trust the Mac on your iPhone">
+    Unlock the iPhone. When the **Trust This Computer** prompt appears, tap **Trust** and enter your passcode if asked. This step is required for Warmr to communicate with the device.
+  </Step>
+  <Step title="Open Warmr and confirm the device appears">
+    Launch Warmr on your Mac. The connected iPhone shows up in the **Devices** panel within a few seconds. If it does not appear, unplug and reconnect the cable.
+  </Step>
+  <Step title="Name the device (optional)">
+    Click the device in the Devices panel and assign it a friendly name — for example, **Rack Slot 3** or **TikTok Farm A**. This makes it easier to identify devices at a glance when managing a large setup.
+  </Step>
+</Steps>
+
+## Tips for managing multiple iPhones
+
+- **Use a powered USB hub** for four or more devices. Unpowered hubs can cause connection drops under load.
+- **Label each cable or port** so you always know which physical iPhone maps to which device in Warmr.
+- **Keep iPhones plugged in and charging** throughout sessions. Warmup and posting runs are continuous, and a device that powers off mid-session will pause its accounts.
+
+<Note>
+  Warmr keeps state for each device. If you unplug and reconnect an iPhone, it resumes from where it left off — accounts do not lose their warmup progress or schedule.
+</Note>
+
+<Warning>
+  Do not use emulators, cloud phones, or jailbroken devices. Warmr is built for genuine iOS devices and does not support modified environments. Using unsupported device types may cause unpredictable behaviour or account flags.
+</Warning>
+
+## iPhone limits by plan
+
+| Plan  | Max iPhones |
+|-------|-------------|
+| Free  | 1           |
+| Solo  | 1           |
+| Rack  | 3           |
+| Scale | Unlimited   |
+
+Need more iPhones than your current plan allows? Upgrade from your Warmr account settings or reach out at [hi@warmr.so](mailto:hi@warmr.so).

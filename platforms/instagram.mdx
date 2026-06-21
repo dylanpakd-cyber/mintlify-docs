@@ -1,0 +1,101 @@
+---
+title: "Using Warmr with Instagram accounts"
+sidebarTitle: "Instagram"
+description: "Warmr warms up Instagram accounts and auto-posts Reels, carousels, and photos on schedule using real iPhone taps — no API access required."
+---
+
+Instagram is fully supported for both warmup and auto-posting. Warmr drives the Instagram iOS app with real on-screen taps — no Meta API, no third-party integrations, and no risk of the API-rate-limit bans that affect traditional scheduling tools.
+
+## What Warmr does on Instagram
+
+<CardGroup cols={3}>
+  <Card title="Warmup" icon="fire">
+    Scrolls the main feed and Reels tab, likes posts, follows accounts, and browses Explore and Search to build a consistent activity pattern.
+  </Card>
+  <Card title="Auto-Posting" icon="circle-play">
+    Uploads Reels, carousels, and single photos; attaches music when applicable; and publishes each post at the scheduled time.
+  </Card>
+  <Card title="Keeps Warm" icon="shield-check">
+    Daily warmup activity continues in parallel with the posting rotation — the account never goes dormant between posts.
+  </Card>
+</CardGroup>
+
+## Supported content types
+
+<CardGroup cols={2}>
+  <Card title="Videos & Reels" icon="video">
+    Upload standard video files. Warmr posts them as Reels automatically through the Instagram app.
+  </Card>
+  <Card title="Carousels" icon="images">
+    Multi-image carousels are fully supported. Arrange your images in the desired order before adding them to the queue.
+  </Card>
+  <Card title="Single Photos" icon="image">
+    Static image posts are supported alongside video and carousel formats.
+  </Card>
+  <Card title="Music" icon="music">
+    Specify a track in your post configuration and Warmr attaches it during the upload flow where Instagram allows it.
+  </Card>
+</CardGroup>
+
+## Account warmup lifecycle
+
+Every Instagram account goes through Warmr's warmup lifecycle before it enters the posting rotation. Posting on a cold or fresh account is the leading cause of suppressed reach and shadowban flags.
+
+<Steps>
+  <Step title="Fresh">
+    The account is newly added to Warmr. Warmup activity begins immediately; posting is blocked.
+  </Step>
+  <Step title="Warmed up">
+    Warmr has been running daily scroll, like, follow, and Explore activity. The account is establishing a normal usage history.
+  </Step>
+  <Step title="Matured">
+    The account has reached Warmr's maturity threshold and is cleared to enter the posting rotation.
+  </Step>
+  <Step title="Kept warm">
+    Warmup activity continues every day alongside scheduled posting.
+  </Step>
+  <Step title="Posting">
+    Warmr publishes content on your schedule while maintaining daily engagement activity in parallel.
+  </Step>
+</Steps>
+
+<Note>
+  Instagram's algorithm favors accounts that engage consistently. Warmr's daily warmup activity — scrolling, liking, following — helps signal that your account is an active human user, improving the reach of every post you publish.
+</Note>
+
+## Capacity and delivery
+
+Each iPhone managed by Warmr supports up to **8 Instagram accounts** simultaneously. Use **Cloud Drop** to queue content from anywhere — Warmr picks it up on the next posting cycle without you needing physical access to the device.
+
+If a device crashes or stalls mid-upload, Warmr restarts and resumes from the last checkpoint. The post will not publish as a duplicate and will not be silently dropped.
+
+## Instagram layout updates
+
+Instagram ships frequent app updates. When a layout change breaks one of Warmr's tap sequences, here is what happens:
+
+<Steps>
+  <Step title="Warmr detects the failed tap">
+    Because Warmr reads the screen in real time, a moved button causes the action to fail and gets flagged immediately.
+  </Step>
+  <Step title="A patch ships within 24–48 hours">
+    The Warmr team updates the tap map to match the new layout.
+  </Step>
+  <Step title="Your Mac app auto-updates">
+    On its next check-in, the Mac app pulls the patch automatically. No reinstall or manual update needed.
+  </Step>
+</Steps>
+
+<Tip>
+  Post at least once per day per account for best reach. Use the schedule feature to fill 2–3 daily slots automatically across your account roster.
+</Tip>
+
+## Related concepts
+
+<CardGroup cols={2}>
+  <Card title="Account Warmup" icon="temperature-arrow-up" href="/concepts/warmup">
+    Understand the warmup lifecycle and how long each stage takes for Instagram accounts.
+  </Card>
+  <Card title="Scheduling" icon="calendar" href="/concepts/scheduling">
+    Configure daily posting slots and manage your content queue across multiple accounts.
+  </Card>
+</CardGroup>

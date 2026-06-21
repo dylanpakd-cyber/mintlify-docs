@@ -1,0 +1,98 @@
+---
+title: "Using Warmr with TikTok accounts"
+sidebarTitle: "TikTok"
+description: "Warmr warms up TikTok accounts through daily scroll, like, and follow activity, then auto-posts videos and carousels on your schedule."
+---
+
+TikTok is Warmr's primary posting platform. Warmr drives the TikTok iOS app directly — no unofficial API, no bots. Every tap, scroll, and upload happens on a real iPhone running the real TikTok app, which means your accounts behave exactly like a human user would.
+
+## What Warmr does on TikTok
+
+<CardGroup cols={3}>
+  <Card title="Warmup" icon="fire">
+    Scrolls the For You feed, likes videos, follows accounts, and runs searches — building a natural activity history on every account.
+  </Card>
+  <Card title="Auto-Posting" icon="circle-play">
+    Uploads videos and carousels, attaches music when specified, and publishes each post at the exact time in your schedule.
+  </Card>
+  <Card title="Keeps Warm" icon="shield-check">
+    Continues daily warmup activity even after an account enters the posting rotation, so engagement signals never go cold.
+  </Card>
+</CardGroup>
+
+## Supported content types
+
+<CardGroup cols={3}>
+  <Card title="Videos" icon="video">
+    Any standard video format TikTok accepts. Warmr uploads and publishes without re-encoding.
+  </Card>
+  <Card title="Carousels" icon="images">
+    Multi-image carousels are fully supported. Add your images in order and Warmr handles the upload sequence.
+  </Card>
+  <Card title="Music" icon="music">
+    Specify a track in your post configuration and Warmr attaches it during the upload flow.
+  </Card>
+</CardGroup>
+
+## Account warmup lifecycle
+
+Before Warmr posts on your behalf, each account moves through a structured lifecycle. Skipping stages — or posting on a fresh account — is the most common cause of suppressed reach.
+
+<Steps>
+  <Step title="Fresh">
+    The account is newly added to Warmr. No posting happens yet.
+  </Step>
+  <Step title="Warmed up">
+    Warmr has been running daily scroll, like, follow, and search activity. The account is building a normal usage history.
+  </Step>
+  <Step title="Matured">
+    The account has passed Warmr's maturity threshold. It is now eligible to enter the posting rotation.
+  </Step>
+  <Step title="Kept warm">
+    Daily warmup activity continues alongside posting. The account never goes dormant.
+  </Step>
+  <Step title="Posting">
+    Warmr publishes content on your schedule. Warmup activity runs in parallel every day.
+  </Step>
+</Steps>
+
+<Note>
+  TikTok is especially sensitive to new accounts posting too soon. Warmr blocks posting until an account has matured through the full warmup cycle. This is the single biggest protection against the "300-view jail" effect.
+</Note>
+
+## Capacity and delivery
+
+Each iPhone managed by Warmr can run up to **8 TikTok accounts** simultaneously. You can queue and deliver posts from anywhere using **Cloud Drop** — upload your content remotely and Warmr picks it up on the next posting cycle.
+
+If a device stalls mid-upload, Warmr detects the crash, restarts, and resumes from the last checkpoint. Your post is not lost and does not publish as a duplicate.
+
+## TikTok layout updates
+
+TikTok occasionally ships app updates that change the on-screen layout Warmr reads. When that happens:
+
+<Steps>
+  <Step title="Warmr detects the change">
+    Warmr reads each action from real screenshots. If a tap target moves, the action fails and Warmr flags the issue.
+  </Step>
+  <Step title="A patch ships within 24–48 hours">
+    The Warmr team pushes an updated tap map for the new layout.
+  </Step>
+  <Step title="Your app pulls the patch automatically">
+    The Mac app checks for updates on its next scheduled check-in. No manual action required on your end.
+  </Step>
+</Steps>
+
+<Tip>
+  Keep captions short and include relevant hashtags in your uploaded content. Warmr posts what you give it — content quality still matters.
+</Tip>
+
+## Related concepts
+
+<CardGroup cols={2}>
+  <Card title="Account Warmup" icon="temperature-arrow-up" href="/concepts/warmup">
+    Learn how the warmup lifecycle works and how long each stage takes.
+  </Card>
+  <Card title="Scheduling" icon="calendar" href="/concepts/scheduling">
+    Set up your posting schedule and manage time slots across multiple accounts.
+  </Card>
+</CardGroup>

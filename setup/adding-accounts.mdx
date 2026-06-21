@@ -1,0 +1,60 @@
+---
+title: "Add and manage social accounts in Warmr"
+sidebarTitle: "Adding Accounts"
+description: "Log in to TikTok, Instagram, X, or LinkedIn on a connected iPhone through Warmr and let it manage the full account lifecycle."
+---
+
+Once your iPhones are connected and your proxies are configured, you are ready to add social media accounts. Warmr supports TikTok, Instagram, X, and LinkedIn. You log in directly on the iPhone through the Warmr interface, and from that point Warmr takes ownership of the account — running warmup activity, tracking maturity, and slotting the account into the posting rotation when it is ready.
+
+## Account limits by plan
+
+| Plan  | Max Accounts       |
+|-------|--------------------|
+| Free  | 8 (1 iPhone)       |
+| Solo  | 8                  |
+| Rack  | 24                 |
+| Scale | Unlimited          |
+
+## Add an account
+
+<Steps>
+  <Step title="Select a connected iPhone">
+    In the Warmr **Devices** panel, click the iPhone you want to add the account to. Confirm the device is online and has an active proxy assigned.
+  </Step>
+  <Step title="Click Add Account and choose a platform">
+    Click **Add Account**, then select **TikTok**, **Instagram**, **X**, or **LinkedIn** from the platform picker.
+  </Step>
+  <Step title="Warmr opens the platform app on the iPhone">
+    Warmr launches the selected app on the iPhone automatically. You will see the app come to the foreground on the device.
+  </Step>
+  <Step title="Log in with your credentials on the iPhone">
+    Enter the account's username and password on the iPhone. Complete any two-factor authentication or verification steps as prompted.
+  </Step>
+  <Step title="Warmr detects the login and registers the account">
+    Once the login succeeds, Warmr detects the authenticated session and adds the account to the Devices panel under that iPhone.
+  </Step>
+  <Step title="The account enters warmup mode automatically">
+    If the account is new or freshly created, Warmr places it into **warmup mode** immediately. It will not post until it has matured through the warmup phase.
+  </Step>
+</Steps>
+
+## What happens after you add an account
+
+<CardGroup cols={2}>
+  <Card title="New accounts" icon="seedling">
+    Enter the warmup phase automatically. Warmr runs daily scroll, like, follow, and search activity to build a genuine usage history. The account is locked out of the posting rotation until it matures.
+  </Card>
+  <Card title="Existing / aged accounts" icon="bolt">
+    Already-aged accounts with an established history may pass through warmup faster and join the posting rotation sooner. Warmr evaluates each account individually.
+  </Card>
+</CardGroup>
+
+<Tip>
+  You can add up to 8 accounts per platform per iPhone. Mix platforms on a single device — for example, 4 TikTok accounts and 4 Instagram accounts — to make full use of each iPhone.
+</Tip>
+
+<Note>
+  Warmr will not allow a brand-new account to post until it has matured through the warmup phase. This protects the account from early bans that commonly occur when fresh accounts post without any prior activity.
+</Note>
+
+To understand the full warmup-to-posting lifecycle, see [Account Lifecycle](/concepts/account-lifecycle).

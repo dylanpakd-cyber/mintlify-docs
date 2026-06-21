@@ -1,0 +1,99 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "almond",
+  "name": "Warmr",
+  "description": "Run your iPhone farm on autopilot. Warmr warms up social accounts and auto-posts to TikTok, Instagram, X, and LinkedIn on schedule.",
+  "colors": {
+    "primary": "#cafa3b",
+    "light": "#647c24",
+    "dark": "#0e080c"
+  },
+  "favicon": "https://media.brand.dev/5d310649-68f4-44f7-9c50-7f7a2891e4ca.png",
+  "icons": {
+    "library": "lucide"
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs"
+  },
+  "contextual": {
+    "options": ["copy", "view", "assistant"]
+  },
+  "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Home",
+          "icon": "house",
+          "href": "/"
+        },
+        {
+          "anchor": "Sign Up",
+          "icon": "user-plus",
+          "href": "https://app.warmr.so/signup"
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "tab": "Guide",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "concepts/account-lifecycle",
+              "concepts/warmup",
+              "concepts/cloud-drop",
+              "concepts/scheduling"
+            ]
+          },
+          {
+            "group": "Setup",
+            "pages": [
+              "setup/iphones",
+              "setup/proxies",
+              "setup/adding-accounts",
+              "setup/posting-schedule"
+            ]
+          },
+          {
+            "group": "Platforms",
+            "pages": [
+              "platforms/tiktok",
+              "platforms/instagram",
+              "platforms/x-linkedin"
+            ]
+          },
+          {
+            "group": "Plans & Billing",
+            "pages": [
+              "billing/plans",
+              "billing/license-key",
+              "billing/faq"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [],
+    "primary": {
+      "type": "button",
+      "label": "Try Free",
+      "href": "https://app.warmr.so/signup"
+    }
+  },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/warmrso"
+    }
+  }
+}
