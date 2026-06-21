@@ -1,22 +1,50 @@
 ---
-title: "Install the Warmr Mac App"
+title: "Install the Warmr app"
 sidebarTitle: "Installation"
-description: "Download and install the Warmr Mac app, activate your license key, and prepare your Mac to control multiple iPhones."
+description: "Check the host and device requirements, install the Warmr app, activate your license key, and prepare your computer to control multiple iPhones."
 ---
 
-Installing Warmr takes just a few minutes. You'll download the Mac app from your dashboard, drag it into Applications, activate your license key, and plug in your first iPhone. This page covers every step in detail, including how to handle the macOS security prompt that appears the first time you open the app.
+Warmr runs on a desktop computer that drives your iPhones over USB. This page covers what you need, how to install the app, and how to handle the security prompt on first launch. The steps below show the Mac flow; Windows is supported too (see the requirements).
 
-## System Requirements
+## Host requirements
 
-Before you install, make sure your setup meets these requirements:
+<Tabs>
+  <Tab title="Mac (recommended)">
+    - **Apple Silicon** — M1, M2, M3, or M4. **Intel Macs are not supported.**
+    - **macOS 14 or later.**
+    - On-device screen recognition runs on the Neural Engine, so a Mac drives roughly twice as many iPhones as a comparable PC at the same budget.
+  </Tab>
+  <Tab title="Windows">
+    - **Windows 10 22H2 or Windows 11**, 64-bit.
+    - **iTunes installed from [apple.com](https://www.apple.com/itunes/)** — the standalone installer, not the Microsoft Store version. Warmr relies on the Apple device service only that installer provides.
+    - Add the Warmr data folder to your antivirus / Defender exclusions, and don't run iTunes or "Apple Devices" alongside Warmr — they compete for the USB session.
 
-- **macOS** — a modern version of macOS (Apple Silicon and Intel Macs are both supported)
-- **Xcode** — free from the Mac App Store. Needed to install the Warmr runner on each iPhone; open it once after installing so it finishes first-launch setup
-- **USB ports or a USB hub** — one port per iPhone you want to connect simultaneously (use a powered hub for 4 or more)
-- **Physical iPhones you own** — Warmr drives real devices; emulators and virtual machines are not supported
-- **An Apple ID** — a free Apple ID works; a paid Apple Developer account ($99/year) makes runner installs one-button and removes weekly re-signing
+    <Warning>
+      Installing the runner with a free Apple ID needs Xcode, which is Mac-only. On Windows you must use the [App Store Connect API method](/setup/install-runner) (a paid Apple Developer account) to install the runner.
+    </Warning>
+  </Tab>
+</Tabs>
 
-## Installing the Mac App
+### How many iPhones a host can drive
+
+Each iPhone runs up to ~8 accounts. Use this as a starting point and size up for more devices:
+
+| iPhones | RAM | Storage |
+|---|---|---|
+| 1–3 | 16 GB | SATA SSD |
+| 5 | 24 GB | NVMe SSD |
+| 10 | 32 GB | NVMe SSD |
+| More than 10 | [Talk to us](mailto:hi@warmr.so) | NVMe SSD |
+
+From around 6 iPhones, connect them through a **powered** USB hub so devices don't drop off the bus under load.
+
+### Also needed
+
+- **Xcode** (Mac, free from the Mac App Store) — to install the Warmr runner with a free Apple ID. Open it once after installing so it finishes first-launch setup.
+- **An Apple ID** — a free one works; a paid Apple Developer account ($99/year) makes runner installs one-button and removes weekly re-signing.
+- **Physical iPhones you own** — Warmr drives real devices; emulators, cloud phones, and virtual machines are not supported. See [Connect iPhones](/setup/iphones) for supported models.
+
+## Installing the app
 
 <Steps>
   <Step title="Download the installer">
