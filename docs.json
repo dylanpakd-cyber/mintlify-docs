@@ -58,9 +58,12 @@
             "group": "Setup",
             "pages": [
               "setup/iphones",
-              "setup/proxies",
+              "setup/iphone-settings",
+              "setup/install-runner",
               "setup/adding-accounts",
-              "setup/posting-schedule"
+              "setup/proxies",
+              "setup/posting-schedule",
+              "setup/troubleshooting"
             ]
           },
           {

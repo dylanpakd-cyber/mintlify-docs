@@ -1,0 +1,90 @@
+---
+title: "Setup troubleshooting"
+sidebarTitle: "Troubleshooting"
+description: "Fixes for the most common Warmr setup and run-time problems — runner install errors, signing issues, stalled sessions, and device disconnects."
+---
+
+Most setup problems come down to a handful of causes. Find your symptom below and apply the fix. If you're still stuck after trying these, reach out at [hi@warmr.so](mailto:hi@warmr.so).
+
+## Install and signing errors
+
+<AccordionGroup>
+  <Accordion title='"Could not launch WarmrRunner" or "Untrusted Developer"'>
+    The developer certificate hasn't been trusted on the iPhone yet. On the device, go to **Settings → General → VPN & Device Management**, tap your developer profile, and tap **Trust**. Then click **Reinstall** in Warmr and start the run again.
+  </Accordion>
+
+  <Accordion title="The runner installed, but warmups can't connect / nothing happens">
+    You almost certainly built with the **▶ Run button (`⌘R`)** instead of **Product → Test (`⌘U`)**. Run installs the app but **not** the automation runner. Open the project in Xcode, select the **WebDriverAgentRunner** scheme, and run **Product → Test (`⌘U`)** again. See [Install the runner](/setup/install-runner).
+  </Accordion>
+
+  <Accordion title="Code-signature error on install / signing-team mismatch">
+    Two common causes:
+
+    1. **Team not set on both targets.** In Xcode, the **Team** must be set on **WarmrRunner** *and* **WarmrRunnerUITests**. Setting one doesn't set the other. Set both, then reinstall.
+    2. **A stale certificate for another team.** Open **Keychain Access → My Certificates**, delete any **Apple Development** certificates for teams you no longer use, then click **Reinstall** in Warmr.
+  </Accordion>
+
+  <Accordion title='"Failed to register bundle identifier"'>
+    A free Apple ID can't reuse a bundle ID another developer already claimed. Always start from a fresh project via Warmr's **Devices → Download Xcode Project** (it ships a unique ID). If it still collides, open the **General** tab in Xcode and set **Bundle Identifier** to something unique like `com.k7m2p9.WarmrRunner` on **both** targets (the second must use the first as a prefix).
+  </Accordion>
+
+  <Accordion title='"Maximum App ID limit reached"'>
+    Free Apple IDs are capped at 10 unique App IDs every 7 days. Wait it out, use a different Apple ID, or move to a paid Apple Developer account (which also removes the weekly re-signing).
+  </Accordion>
+
+  <Accordion title='"This device has reached the maximum number of installed apps"'>
+    A free Apple ID can install at most 3 developer-signed apps on one device. Remove one and try again, or switch to a paid account.
+  </Accordion>
+
+  <Accordion title='"Test connection" fails, or "This key is Individual"'>
+    The key was created on the **Individual Keys** tab. Re-create it on the **Team Keys** tab at **App Store Connect → Users and Access → Integrations**. Individual keys can't create signing profiles. Also double-check the **Issuer ID** and **Key ID** for typos.
+  </Accordion>
+
+  <Accordion title='"Regenerate as App Manager" / the key role is too low'>
+    The API key's role must be **App Manager or higher** — the **Developer** role is blocked from creating signing profiles. Re-issue the key with the **App Manager** (or Admin) role.
+  </Accordion>
+
+  <Accordion title="Certificate quota reached (2 of 2)">
+    Your team hit Apple's development certificate limit. Open the [Apple Developer portal](https://developer.apple.com/account), find **your own** orphan certificate (where **Created By** is your name), revoke it, and retry. Don't touch other team members' certificates.
+  </Accordion>
+
+  <Accordion title="Warmr is waiting for the first device to register its certificate">
+    Expected when installing onto 5 or more devices at once — the first device registers its certificate with Apple, and the rest wait for it to finish. No action needed; it clears on its own.
+  </Accordion>
+
+  <Accordion title="Xcode or Warmr doesn't see the iPhone">
+    Work through these in order: unlock the phone, re-confirm **Trust This Computer**, make sure you're using a **data** cable (not charge-only), try a different USB port, then restart Xcode. As a last resort, restart the Mac.
+  </Accordion>
+
+  <Accordion title="The build is slow or seems stuck">
+    A typical first build is 30–60 seconds; on a slow Mac it can stretch to a few minutes. If it's clearly hung, quit Xcode, delete `~/Library/Developer/Xcode/DerivedData`, and build again.
+  </Accordion>
+</AccordionGroup>
+
+## Problems during warmups and posts
+
+<AccordionGroup>
+  <Accordion title="A session sits idle, then stalls — the device shows as standby">
+    **StandBy is on.** Once StandBy activates on a charging, horizontal, idle iPhone, iOS blocks app launches. Turn it off at **Settings → StandBy → Off**, or keep the device upright while charging. See [Prepare each iPhone](/setup/iphone-settings).
+  </Accordion>
+
+  <Accordion title="An upload stalls on a near-black screen">
+    **Appearance is set to Dark or Automatic.** Some app screens render in near-black on Dark mode, and Warmr can't find the on-screen targets. Set **Settings → Display & Brightness → Appearance → Light** and restart the session.
+  </Accordion>
+
+  <Accordion title="An iPhone disconnects mid-run">
+    Almost always a cable issue. Use an **original Apple or MFi-certified** cable — generic cables drop under sustained data load. For 4 or more devices, use a **powered** USB hub. A single lane dropping doesn't require restarting the whole app: replug the cable, re-confirm Trust if prompted, and resume.
+  </Accordion>
+
+  <Accordion title='Warmr says the runner is "outdated" or asks you to reinstall'>
+    The on-device runner is behind the Mac app. Open **Warmr → Devices** and click **Reinstall** for that iPhone. Runner updates normally ship inside the Mac app automatically; a manual reinstall covers the rare case where it didn't apply.
+  </Accordion>
+
+  <Accordion title="Automation won't start at all">
+    Confirm the iPhone is unlocked and trusted, the runner is installed and trusted, and the device shows green in the **Devices** panel. If a device vanished briefly and came back, give it a moment to reconnect before starting a run.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+  When an app changes its layout and a post or warmup action fails, that's not something you fix locally — Warmr ships a patch within 24–48 hours and your Mac app pulls it automatically on its next check-in.
+</Note>

@@ -1,0 +1,171 @@
+---
+title: "Install the Warmr runner on each iPhone"
+sidebarTitle: "Install the Runner"
+description: "Install the Warmr runner once per iPhone so your Mac can drive the device. Use the one-button App Store Connect API method, or sign manually in Xcode with a free Apple ID."
+---
+
+The Warmr runner is a small helper that lives on each iPhone and lets your Mac drive the device — tapping, scrolling, and posting inside the real apps. **Every iPhone needs the runner installed once before it can warm up or post.** This is the single most important setup step, and the one most people skip.
+
+<Note>
+  You install the runner **once per iPhone**. After that it stays on the device, and runner updates ship inside the Warmr Mac app — you never reinstall it for an app update.
+</Note>
+
+## Before you start
+
+<Steps>
+  <Step title="Connect and trust the iPhone">
+    The device must be plugged in and showing in Warmr's **Devices** panel. See [Connect iPhones](/setup/iphones).
+  </Step>
+  <Step title="Prepare the iPhone's settings">
+    Developer Mode must be on (and a few other settings configured). See [Prepare each iPhone](/setup/iphone-settings) — do this first, or the install will fail.
+  </Step>
+  <Step title="Install Xcode (free, from the Mac App Store)">
+    Xcode is required for the manual signing path, and its developer tools back the one-button path too. Open it once after installing so it finishes its first-launch setup.
+  </Step>
+</Steps>
+
+## Choose a signing method
+
+Apple requires every app installed on an iPhone to be signed. Warmr offers two ways to do this — pick based on whether you have a paid Apple Developer account.
+
+<CardGroup cols={2}>
+  <Card title="App Store Connect API — recommended" icon="bolt">
+    For paid **Apple Developer** accounts ($99/year). One-button install, and Warmr re-signs automatically. The certificate is valid for **1 year**.
+  </Card>
+  <Card title="Sign via Xcode — free" icon="hammer">
+    Works with a **free Apple ID**, no paid account needed. The trade-off: the certificate expires every **7 days**, so you re-sign weekly.
+  </Card>
+</CardGroup>
+
+<Tabs>
+  <Tab title="App Store Connect API (recommended)">
+    This is the fastest path — about two minutes. Warmr builds, signs, and installs the runner for you and auto-creates the matching certificate for your team — no Xcode windows, no command line, and no Apple ID password stored in the app.
+
+    <Accordion title="Is this safe?">
+      Yes — this is the official, Apple-supported way to authenticate with your developer account. Warmr signs locally with short-lived JWT tokens generated from your `.p8` key. **The key never leaves your machine**, no Apple ID password is stored, and your account's 2FA is untouched. Warmr only creates **Development** certificates and provisioning profiles — the same kind Xcode makes when you run a project on a connected iPhone. Your App Store / TestFlight / Distribution certificates are never touched, and revoking the key in App Store Connect cuts off access immediately.
+    </Accordion>
+
+    <Steps>
+      <Step title="Create an App Store Connect API key">
+        Go to [App Store Connect](https://appstoreconnect.apple.com) → **Users and Access** → **Integrations** → **App Store Connect API**. Generate a **Team key** (not an Individual key) with the role **Admin** or **App Manager**.
+
+        {/* SHOT: App Store Connect → Users and Access → Integrations → App Store Connect API, with the "Generate API Key" / Team Keys tab highlighted */}
+
+        <Warning>
+          The key must be a **Team key** with role **Admin** or **App Manager**. A key with the **Developer** role cannot create provisioning profiles, and the install will fail.
+        </Warning>
+      </Step>
+      <Step title="Download the .p8 key file">
+        After generating the key, click **Download** to save the `.p8` file. **Apple only lets you download it once** — keep it somewhere safe. Note the **Key ID** and **Issuer ID** shown on the same page.
+      </Step>
+      <Step title="Enter your key in Warmr">
+        In Warmr, open the **Devices** tab and choose **App Store Connect API**. Paste your **Issuer ID** and **Key ID**, then select the `.p8` file you downloaded.
+
+        {/* SHOT: Warmr Devices tab → App Store Connect API panel with Issuer ID / Key ID fields and the .p8 file picker */}
+      </Step>
+      <Step title="Test the connection">
+        Click **Test connection**. Warmr verifies the key can talk to Apple and auto-detects your Team ID. Fix any errors before continuing — a failed test almost always means the wrong key role or a typo in the IDs.
+
+        <Note>
+          If your team is brand new with no registered identifiers yet, Warmr may ask for your **Team ID** — the 10-character string in the top-right corner at [developer.apple.com/account](https://developer.apple.com/account).
+        </Note>
+      </Step>
+      <Step title="Sign & Install on each device">
+        Click **Sign & Install** next to the iPhone. Warmr builds, signs, and installs the runner — about 30–60 seconds the first time. Repeat for each connected iPhone.
+
+        {/* SHOT: Devices list with the "Sign & Install" button next to a connected iPhone */}
+      </Step>
+    </Steps>
+
+    <Check>
+      With a paid account, Warmr re-signs the runner automatically as the certificate nears expiry. There's no weekly maintenance.
+    </Check>
+  </Tab>
+
+  <Tab title="Sign via Xcode (free Apple ID)">
+    No paid account? Sign the runner yourself in Xcode with any Apple ID. It's a few more clicks, and the signature lasts 7 days before you re-sign.
+
+    <Step title="Add your Apple ID to Xcode first">
+      Open **Xcode → Settings → Accounts** (`⌘,`), click **+**, choose **Apple ID**, and sign in. Your name appears as a **Personal Team** — that's your free signing team. If you have two-factor auth, enter the code Apple pushes to your trusted device.
+    </Step>
+
+    Then install the runner:
+
+    <Steps>
+      <Step title="Download the Xcode project">
+        In Warmr, open the **Devices** tab and click **Download Xcode Project**. A ZIP lands in your Downloads folder. Unzip it.
+
+        {/* SHOT: Warmr Devices tab → "Download Xcode Project" button */}
+      </Step>
+      <Step title="Open WarmrRunner.xcodeproj">
+        Inside the unzipped folder, double-click **`WarmrRunner.xcodeproj`** to open it in Xcode. Wait for Xcode to finish indexing (the progress bar at the top goes idle).
+      </Step>
+      <Step title="Set your Team on BOTH targets">
+        Select the **WarmrRunner** project in the left sidebar, open the **Signing & Capabilities** tab, and set **Team** to your Apple ID. Then do it again for the second target.
+
+        <Warning>
+          You must set the Team on **both** targets — **WarmrRunner** *and* **WarmrRunnerUITests** in the TARGETS list. Setting one does not set the other. If WarmrRunnerUITests has no team, the runner fails to install with a code-signature error.
+        </Warning>
+
+        {/* SHOT: Xcode Signing & Capabilities tab, TARGETS list showing both WarmrRunner and WarmrRunnerUITests with the same Team selected */}
+      </Step>
+      <Step title="Plug in and unlock your iPhone">
+        Connect the iPhone via USB and unlock it. If iOS shows **Trust This Computer?**, tap **Trust** and enter your passcode.
+      </Step>
+      <Step title="Select the WebDriverAgentRunner scheme">
+        In the scheme selector at the top of Xcode, choose **WebDriverAgentRunner** (not WarmrRunner), and pick your iPhone as the destination.
+      </Step>
+      <Step title="Build with Product → Test (⌘U)">
+        Open the **Product** menu and click **Test** (`⌘U`). This builds WebDriverAgent — about a minute the first time — and installs the runner on your iPhone.
+
+        <Warning>
+          Use **Test (`⌘U`)**, **not** the ▶ Run button (`⌘R`). The Run button installs the app but **not** the automation runner — and then your warmups silently can't connect. This is the #1 cause of "the runner is installed but nothing happens."
+        </Warning>
+      </Step>
+      <Step title="Repeat for each iPhone">
+        Switch the destination to the next device and press `⌘U` again. One free Apple ID covers up to 3 devices.
+      </Step>
+    </Steps>
+
+    <AccordionGroup>
+      <Accordion title='Xcode says "Failed to register bundle identifier"'>
+        Free Apple IDs can't reuse a bundle ID that another developer already claimed. Open the **General** tab (next to Signing & Capabilities) and change **Bundle Identifier** to something unique, for example `com.k7m2p9.WarmrRunner` (pick any short random string). Do it for both targets — the second target's bundle ID must start with the first as a prefix. Always download a fresh project from Warmr's Devices tab, since it ships a pre-scoped unique ID.
+      </Accordion>
+      <Accordion title='"Maximum App ID limit reached"'>
+        Free Apple IDs are capped at 10 unique App IDs per 7 days. Wait it out, use a different Apple ID, or move to a paid Apple Developer account.
+      </Accordion>
+    </AccordionGroup>
+
+    <Note>
+      **Every 7 days:** a free Apple ID signature expires and the runner stops launching. To refresh it, plug in the iPhone, open the same `WarmrRunner.xcodeproj`, pick the device, and press **Product → Test (`⌘U`)** again. Tired of the weekly refresh? A paid Apple Developer account extends signing to a year and lets Warmr re-sign automatically.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Trust the runner on your iPhone
+
+The first time the runner is installed with a free or personal Apple ID, iOS doesn't trust the developer certificate yet. Allow it by hand:
+
+<Steps>
+  <Step title="Open device management settings">
+    On the iPhone, go to **Settings → General → VPN & Device Management**.
+  </Step>
+  <Step title="Trust your developer profile">
+    Under **Developer App**, tap the row with your Apple ID, then tap **Trust** and confirm.
+
+    {/* SHOT: iPhone Settings → General → VPN & Device Management → Developer App → Trust dialog */}
+  </Step>
+  <Step title="Launch the runner once">
+    Find the **WarmrRunner** icon on the home screen and tap it. It opens to a blank white screen — that's expected; the runner has no interface of its own. Swipe it closed. You won't need to open it again.
+  </Step>
+</Steps>
+
+## Verify it worked
+
+Back in Warmr's **Devices** panel, the iPhone should now show a green status and a runner-installed badge. The fastest confirmation is to start a short warmup on the device — if it runs, the install is good.
+
+<Check>
+  Runner installed and trusted? You're ready to [add an account](/setup/adding-accounts) and start warming.
+</Check>
+
+Stuck on any step? See [Setup troubleshooting](/setup/troubleshooting) for the exact fix to each common error.

@@ -1,58 +1,85 @@
 ---
-title: "Configure proxies for your Warmr accounts"
+title: "Proxies and IP setup for Warmr"
 sidebarTitle: "Proxies"
-description: "Assign a unique IP address to each social account in Warmr to reduce shadowban risk and keep your farm running safely at scale."
+description: "When you actually need a proxy, why dedicated ISP proxies and SIM cards are the right choice, and how to give each account its own IP with Stash or Shadowrocket."
 ---
 
-Every account in your farm needs its own network identity. When multiple accounts share a single home IP address, platforms quickly detect the pattern and flag or ban those accounts — sometimes within hours. Proxies solve this by giving each account a distinct IP that looks like an independent, real-world mobile user. Getting proxy configuration right is one of the most important steps in building a healthy, long-running farm.
+A proxy gives an account its own network identity so platforms don't see several accounts sharing one IP. The key thing to understand first: you only need them past a certain account density — below that, your home network is fine.
 
-## Recommended proxy types
+## Do you actually need a proxy?
 
-<CardGroup cols={3}>
-  <Card title="4G Mobile Proxies" icon="signal">
-    The gold standard. Traffic routes through a real mobile network, which is indistinguishable from a genuine phone browsing on cellular data. Use these whenever possible.
+The rule is about how many accounts you run **on a single iPhone**, not how many iPhones you have.
+
+<CardGroup cols={2}>
+  <Card title="1–2 accounts per iPhone → home network is fine" icon="house">
+    Two accounts coming from one home IP looks completely normal. No proxy, nothing to configure. Just leave Warmr's proxy list empty and run.
   </Card>
-  <Card title="Residential Proxies" icon="house">
-    A strong alternative. IPs are assigned to real home connections, so they appear legitimate to platform detection systems. Choose providers with large, frequently rotated pools.
-  </Card>
-  <Card title="SIM Card per Device" icon="sim-card">
-    Ideal for hardware farms. Each iPhone uses its own SIM for mobile data, providing a unique carrier IP with no third-party proxy service required.
+  <Card title="3–4 accounts per iPhone → give each its own IP" icon="layer-group">
+    You can run up to **3–4 accounts per iPhone on TikTok and Instagram**. Once you go past 2 on one phone, that's when stacking them on a single home IP starts to look like a cluster — so each account should get a dedicated IP.
   </Card>
 </CardGroup>
 
-## What NOT to use
+<Note>
+  Adding more iPhones doesn't change this on its own — a second iPhone on your home network with 1–2 accounts is still fine. It's the number of accounts sharing one IP that matters.
+</Note>
 
-Avoid the following proxy types — they are well-known to platform trust-and-safety systems and will increase your flag rate significantly:
+## The two options that matter: dedicated ISP proxies and SIM cards
 
-- **Datacenter proxies** — IP ranges are publicly listed and trivially blocked
-- **Shared proxies** — multiple users share the same IP, creating cross-contamination risk
-- **Free proxies** — unreliable, frequently abused, and often already blacklisted
+When you do need a proxy, not all of them are equal. Two options stand out because they give each account a **clean, stable IP that only it uses**:
 
-## Assign a proxy to an account
+<CardGroup cols={2}>
+  <Card title="Dedicated ISP proxies" icon="signal">
+    A static IP issued by a real internet provider and assigned to you alone. It reads as a genuine residential connection **and** stays up reliably — you get residential legitimacy without sharing the IP with anyone else. This is the recommended choice for most setups.
+  </Card>
+  <Card title="A SIM card per iPhone" icon="sim-card">
+    Each iPhone uses its own SIM for mobile data, so it gets a unique carrier IP straight from a real mobile network — the most authentic signal there is, with no third-party proxy involved at all. Ideal if you're running a hardware rack.
+  </Card>
+</CardGroup>
+
+**Why dedicated matters:** platforms link accounts that share an IP, and they penalize IPs with bad history. A **dedicated** IP solves both — it's used by one account only, so there's no shared-origin pattern and no flags inherited from strangers who used the same IP before you. Shared and rotating pools fail on exactly these two points.
+
+## Providers: what to use and avoid
+
+<CardGroup cols={2}>
+  <Card title="Use" icon="circle-check">
+    Reputable providers like **AnyIP** and **Bright Data** for clean dedicated ISP or mobile IPs.
+  </Card>
+  <Card title="Avoid" icon="circle-x">
+    **IPRoyal** and similar budget providers. Their IPs are heavily shared and recycled, which is one of the fastest ways to land in a shadowban.
+  </Card>
+</CardGroup>
+
+<Warning>
+  Datacenter, shared, and free proxies are well known to platform trust-and-safety systems — trivially detected and quick to flag. Stick to dedicated ISP, residential, or mobile IPs.
+</Warning>
+
+## Set up per-account proxies on the iPhone
+
+Warmr can switch the proxy automatically as it rotates between accounts, so each account always uses its own IP. On the iPhone, you use a proxy client app — **Stash** or **Shadowrocket** (both on the App Store) — and Warmr tells it which server to use.
 
 <Steps>
-  <Step title="Open Warmr and select an account">
-    In the **Devices** panel, click the account you want to configure.
+  <Step title="Add your proxy servers in Warmr">
+    Open the **Proxy** section in Warmr and paste in the proxies from your provider.
   </Step>
-  <Step title="Open account Settings and find the Proxy section">
-    Navigate to the account's **Settings** tab. Scroll to the **Proxy** section.
+  <Step title="Install Stash or Shadowrocket on the iPhone">
+    Install whichever client you prefer from the App Store. Both work the same way with Warmr.
   </Step>
-  <Step title="Enter your proxy credentials">
-    Fill in the **host**, **port**, **username**, and **password** provided by your proxy service.
+  <Step title="Import the config via QR">
+    Warmr's Proxy page shows a QR code (and a **Copy URL** option). In Stash or Shadowrocket, scan the QR to import the config, then turn the VPN toggle on.
+
+    {/* SHOT: Warmr Proxy page QR code next to the iPhone Stash/Shadowrocket import screen */}
   </Step>
-  <Step title="Save and verify">
-    Click **Save**. Warmr immediately routes all traffic for that account through the proxy. You can verify the assigned IP is active from the same settings screen.
+  <Step title="Let Warmr rotate automatically">
+    From here, Warmr switches the active server itself each time it moves to the next account. You don't touch anything by hand.
   </Step>
 </Steps>
 
+<Note>
+  Traffic leaves the iPhone directly to your proxy provider — the Mac is never on that path and never sees your account traffic. Keep the iPhone and Mac on the same wifi when you first import a config or add new servers.
+</Note>
+
 <Tip>
-  If you have one iPhone per SIM card, you may not need a third-party proxy at all — the SIM provides a unique mobile IP for every account on that device. Check with your carrier about data plans for running multiple SIMs simultaneously.
+  Give each account its own dedicated IP. Reusing one proxy across several accounts re-creates the exact shared-origin pattern proxies are meant to avoid.
 </Tip>
 
-<Warning>
-  Never assign the same proxy IP to more than one account. IP collisions are one of the most common causes of account flags at scale. Each account must have its own dedicated IP.
-</Warning>
-
-<Note>
-  Not sure which proxy service to use or how to configure it? Book a free setup call from [warmr.so](https://warmr.so). We walk you through the exact providers and settings that work well with Warmr.
-</Note>
+Not sure which provider fits your regions and budget? Reach out at [hi@warmr.so](mailto:hi@warmr.so) — we'll point you in the right direction.
