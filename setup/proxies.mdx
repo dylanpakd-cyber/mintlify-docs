@@ -53,13 +53,21 @@ When you do need a proxy, not all of them are equal. Two options stand out becau
   Datacenter, shared, and free proxies are well known to platform trust-and-safety systems — trivially detected and quick to flag. Stick to dedicated ISP, residential, or mobile IPs.
 </Warning>
 
+## Always use the SOCKS5 type
+
+Whatever provider you choose, use its **SOCKS5** proxies — not HTTP, and not any other type. Warmr is built around SOCKS5, and it's the type that routes each account's traffic reliably through Stash or Shadowrocket.
+
+<Warning>
+  When you add a proxy in Warmr, set the type to **SOCKS5**. Most providers let you pick SOCKS5 when you create or export the proxy; if you're given both a SOCKS5 and an HTTP endpoint, use the SOCKS5 one.
+</Warning>
+
 ## Set up per-account proxies on the iPhone
 
 Warmr can switch the proxy automatically as it rotates between accounts, so each account always uses its own IP. On the iPhone, you use a proxy client app — **Stash** or **Shadowrocket** (both on the App Store) — and Warmr tells it which server to use.
 
 <Steps>
-  <Step title="Add your proxy servers in Warmr">
-    Open the **Proxy** section in Warmr and paste in the proxies from your provider.
+  <Step title="Add your SOCKS5 proxies in Warmr">
+    Open the **Proxy** section in Warmr and paste in your provider's **SOCKS5** proxies (host, port, and credentials), with the type set to SOCKS5.
   </Step>
   <Step title="Install Stash or Shadowrocket on the iPhone">
     Install whichever client you prefer from the App Store. Both work the same way with Warmr.
