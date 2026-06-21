@@ -1,36 +1,49 @@
 ---
-title: "Get started with Warmr in 10 minutes"
+title: "Get started with Warmr"
 sidebarTitle: "Quickstart"
-description: "Sign up for Warmr, install the Mac app, connect your first iPhone, and run your first account warmup — all in under 10 minutes."
+description: "Sign up, install the Mac app, prepare an iPhone, install the runner, and start your first account warmup — the full path from zero to a live warmup."
 ---
 
-This guide walks you through everything you need to go from zero to a live account warmup — signing up, installing the Mac app, connecting an iPhone, and kicking off your first warmup session. By the end, Warmr will be running on your Mac and actively warming your first social account.
+This is the complete path from nothing to a live warmup: sign up, install the Mac app, get one iPhone fully set up, and start warming your first account. Most of the time goes into a **one-time** iPhone setup — connecting it, configuring a few iOS settings, and installing the Warmr runner. Budget around **20–30 minutes** for your first device; every device after that is faster.
+
+<Note>
+  The iPhone setup steps below (3–5) are the part people skip and then wonder why nothing runs. Don't skip them — an iPhone can't warm or post until the runner is installed on it.
+</Note>
 
 <Steps>
-  <Step title="Sign up for Warmr">
-    Go to [https://app.warmr.so/signup](https://app.warmr.so/signup) and sign in with Google. Your license key is delivered instantly to your email and dashboard — no credit card required. The free 7-day trial gives you full access to get started.
+  <Step title="Sign up and grab your license key">
+    Go to [app.warmr.so/signup](https://app.warmr.so/signup) and sign in with Google. Your license key is delivered instantly to your email and dashboard — no credit card required. The free trial gives you full access to get started.
   </Step>
-  <Step title="Download and install the Mac app">
-    After signing up, open your Warmr dashboard and download the Mac app installer. See [Installation](/installation) for step-by-step help with the .dmg and macOS security prompts.
+  <Step title="Install and activate the Mac app">
+    Download the Warmr Mac app from your dashboard, drag it into **Applications**, and open it. Paste your license key on the activation screen and click **Activate**. Full walkthrough, including the macOS security prompt: [Installation](/installation).
   </Step>
-  <Step title="Activate your license key">
-    Open Warmr from your Applications folder. When prompted, paste the license key from your signup email or dashboard and click **Activate**. Warmr will confirm activation and take you to the main interface.
+  <Step title="Connect your first iPhone">
+    Plug the iPhone into your Mac with a data USB cable, unlock it, and tap **Trust** when asked. It appears in Warmr's **Devices** panel within a few seconds. Details: [Connect iPhones](/setup/iphones).
   </Step>
-  <Step title="Connect an iPhone">
-    Plug your iPhone into your Mac via USB. Unlock the iPhone and tap **Trust** when it asks whether to trust this computer. Within a few seconds, the device appears in Warmr's device list, ready to use.
+  <Step title="Prepare the iPhone's settings">
+    On the iPhone, turn on **Developer Mode**, set **Appearance** to **Light**, turn **StandBy** **Off**, and set **Auto-Lock** to **Never**. These prevent the most common stalls. Full checklist: [Prepare each iPhone](/setup/iphone-settings).
+  </Step>
+  <Step title="Install the Warmr runner">
+    Install the runner once per iPhone so your Mac can drive it. With a paid Apple Developer account, use the one-button **App Store Connect API** method. With a free Apple ID, sign in Xcode (**Product → Test / `⌘U`**, not Run). Step by step: [Install the runner](/setup/install-runner).
   </Step>
   <Step title="Add a social account">
-    Select your connected iPhone in Warmr and choose **Add Account**. Pick the platform — TikTok, Instagram, X, or LinkedIn — and log in to the account directly on the iPhone through the Warmr interface.
+    Log into the account in its app on the iPhone (for example, TikTok), then add it in Warmr under the connected device. See [Adding accounts](/setup/adding-accounts).
   </Step>
   <Step title="Start your first warmup">
-    Select the account you just added and press **Start**. Warmr immediately begins the warmup phase — scrolling feeds, liking posts, and following accounts — to build a natural activity history before any scheduled posts go live.
+    Select the account and press **Start**. Warmr drives the iPhone to scroll, like, follow, and search — building a natural activity history before any post goes live.
   </Step>
 </Steps>
 
+<Check>
+  Watching the iPhone scroll its feed on its own means everything is wired up correctly. From here, set a [posting schedule](/setup/posting-schedule) and use [Cloud Drop](/concepts/cloud-drop) to feed in content.
+</Check>
+
 <Tip>
-  You can connect additional iPhones at any time. Each iPhone can run up to 8 accounts per platform.
+  Connect more iPhones at any time — repeat steps 3–5 for each one. Each iPhone can run up to 8 accounts per platform.
 </Tip>
 
 <Note>
-  Fresh accounts go through a warmup phase before they join your posting rotation. This usually takes a few days depending on the platform.
+  Fresh accounts go through a warmup phase before they join your posting rotation — usually a few days, depending on the platform. Warmr blocks posting until an account has matured. See [Account lifecycle](/concepts/account-lifecycle).
 </Note>
+
+Hit an error along the way? [Setup troubleshooting](/setup/troubleshooting) has the fix for each common one.

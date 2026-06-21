@@ -11,8 +11,10 @@ Installing Warmr takes just a few minutes. You'll download the Mac app from your
 Before you install, make sure your setup meets these requirements:
 
 - **macOS** — a modern version of macOS (Apple Silicon and Intel Macs are both supported)
-- **USB ports or a USB hub** — one port per iPhone you want to connect simultaneously
+- **Xcode** — free from the Mac App Store. Needed to install the Warmr runner on each iPhone; open it once after installing so it finishes first-launch setup
+- **USB ports or a USB hub** — one port per iPhone you want to connect simultaneously (use a powered hub for 4 or more)
 - **Physical iPhones you own** — Warmr drives real devices; emulators and virtual machines are not supported
+- **An Apple ID** — a free Apple ID works; a paid Apple Developer account ($99/year) makes runner installs one-button and removes weekly re-signing
 
 ## Installing the Mac App
 
@@ -38,18 +40,36 @@ Before you install, make sure your setup meets these requirements:
 
 Once Warmr is running, you can connect one or more iPhones to your Mac:
 
-1. Plug the iPhone into your Mac using a USB cable.
+1. Plug the iPhone into your Mac using a data USB cable.
 2. Unlock the iPhone. When the **Trust This Computer?** prompt appears, tap **Trust**.
-3. The iPhone appears in Warmr's device list within a few seconds and is ready to use.
+3. The iPhone appears in Warmr's device list within a few seconds.
 
 Repeat these steps for each additional iPhone you want to add.
+
+<Warning>
+  Connecting an iPhone is not the last step. Before it can warm or post, each device needs its iOS settings configured and the **Warmr runner** installed. A freshly connected phone with no runner won't do anything yet.
+</Warning>
+
+## Next: get each iPhone ready
+
+Work through these in order for every iPhone:
+
+<Steps>
+  <Step title="Connect the iPhone">
+    USB, unlock, **Trust** — covered above. More detail: [Connect iPhones](/setup/iphones).
+  </Step>
+  <Step title="Prepare the iOS settings">
+    Developer Mode on, Appearance Light, StandBy off, Auto-Lock never, and a few more. [Prepare each iPhone](/setup/iphone-settings).
+  </Step>
+  <Step title="Install the Warmr runner">
+    Install it once per device so your Mac can drive it. [Install the runner](/setup/install-runner).
+  </Step>
+</Steps>
 
 <Note>
   Warmr needs to stay running on your Mac for warmups and auto-posts to work. Keep the Mac awake and plugged in during runs.
 </Note>
 
 <Tip>
-  A USB hub lets you connect 10+ iPhones to a single Mac. Use a powered hub to ensure stable connections across all devices.
+  A powered USB hub lets you connect many iPhones to a single Mac and keeps connections stable under load — use one for 4 or more devices.
 </Tip>
-
-For detailed guidance on setting up multiple iPhones, managing device trust, and troubleshooting connection issues, see [Device Setup](/setup/iphones).
