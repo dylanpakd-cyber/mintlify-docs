@@ -1,33 +1,48 @@
 ---
 title: "Proxies and IP setup for Warmr"
 sidebarTitle: "Proxies"
-description: "When you actually need proxies, which providers to use and avoid, and how to give each account its own IP with Stash or Shadowrocket on the iPhone."
+description: "When you actually need a proxy, why dedicated ISP proxies and SIM cards are the right choice, and how to give each account its own IP with Stash or Shadowrocket."
 ---
 
-Proxies give each account its own network identity so platforms don't see many accounts sharing one IP. But you don't always need them — start by deciding whether they apply to your setup.
+A proxy gives an account its own network identity so platforms don't see several accounts sharing one IP. The key thing to understand first: you only need them past a certain account density — below that, your home network is fine.
 
 ## Do you actually need a proxy?
 
+The rule is about how many accounts you run **on a single iPhone**, not how many iPhones you have.
+
 <CardGroup cols={2}>
-  <Card title="1–2 accounts per device → no proxy needed" icon="house">
-    Your home wifi is perfectly fine. A couple of accounts coming from one home IP looks completely normal, so there's nothing to configure. Skip this page.
+  <Card title="1–2 accounts per iPhone → home network is fine" icon="house">
+    Two accounts coming from one home IP looks completely normal. No proxy, nothing to configure. Just leave Warmr's proxy list empty and run.
   </Card>
-  <Card title="Scaling up → yes, use proxies" icon="layer-group">
-    Once you're running several devices or stacking more accounts per device, give each account its own IP so platforms don't link them by a shared origin.
+  <Card title="3–4 accounts per iPhone → give each its own IP" icon="layer-group">
+    You can run up to **3–4 accounts per iPhone on TikTok and Instagram**. Once you go past 2 on one phone, that's when stacking them on a single home IP starts to look like a cluster — so each account should get a dedicated IP.
   </Card>
 </CardGroup>
 
 <Note>
-  Proxies are optional. If you're not running proxies, just leave Warmr's proxy list empty — accounts go out over your home connection.
+  Adding more iPhones doesn't change this on its own — a second iPhone on your home network with 1–2 accounts is still fine. It's the number of accounts sharing one IP that matters.
 </Note>
 
-## Which proxies to use
+## The two options that matter: dedicated ISP proxies and SIM cards
 
-Proxy quality matters more than price. A cheap proxy on a crowded, recycled IP pool is worse than no proxy at all — you inherit every flag from everyone else who used that IP.
+When you do need a proxy, not all of them are equal. Two options stand out because they give each account a **clean, stable IP that only it uses**:
 
 <CardGroup cols={2}>
-  <Card title="Recommended" icon="circle-check">
-    Reputable mobile and residential providers like **AnyIP** and **Bright Data**. Clean pools, large rotation, and IPs that read as genuine mobile or home users.
+  <Card title="Dedicated ISP proxies" icon="signal">
+    A static IP issued by a real internet provider and assigned to you alone. It reads as a genuine residential connection **and** stays up reliably — you get residential legitimacy without sharing the IP with anyone else. This is the recommended choice for most setups.
+  </Card>
+  <Card title="A SIM card per iPhone" icon="sim-card">
+    Each iPhone uses its own SIM for mobile data, so it gets a unique carrier IP straight from a real mobile network — the most authentic signal there is, with no third-party proxy involved at all. Ideal if you're running a hardware rack.
+  </Card>
+</CardGroup>
+
+**Why dedicated matters:** platforms link accounts that share an IP, and they penalize IPs with bad history. A **dedicated** IP solves both — it's used by one account only, so there's no shared-origin pattern and no flags inherited from strangers who used the same IP before you. Shared and rotating pools fail on exactly these two points.
+
+## Providers: what to use and avoid
+
+<CardGroup cols={2}>
+  <Card title="Use" icon="circle-check">
+    Reputable providers like **AnyIP** and **Bright Data** for clean dedicated ISP or mobile IPs.
   </Card>
   <Card title="Avoid" icon="circle-x">
     **IPRoyal** and similar budget providers. Their IPs are heavily shared and recycled, which is one of the fastest ways to land in a shadowban.
@@ -35,10 +50,8 @@ Proxy quality matters more than price. A cheap proxy on a crowded, recycled IP p
 </CardGroup>
 
 <Warning>
-  Datacenter, shared, and free proxies are well known to platform trust-and-safety systems. They're trivially detected and will raise your flag rate. Stick to clean mobile or residential IPs.
+  Datacenter, shared, and free proxies are well known to platform trust-and-safety systems — trivially detected and quick to flag. Stick to dedicated ISP, residential, or mobile IPs.
 </Warning>
-
-A SIM card per iPhone is also a great option if you have it — each device gets a unique carrier IP with no third-party proxy service at all.
 
 ## Set up per-account proxies on the iPhone
 
@@ -46,7 +59,7 @@ Warmr can switch the proxy automatically as it rotates between accounts, so each
 
 <Steps>
   <Step title="Add your proxy servers in Warmr">
-    Open the **Proxy** section in Warmr and paste in the proxy servers from your provider.
+    Open the **Proxy** section in Warmr and paste in the proxies from your provider.
   </Step>
   <Step title="Install Stash or Shadowrocket on the iPhone">
     Install whichever client you prefer from the App Store. Both work the same way with Warmr.
@@ -66,7 +79,7 @@ Warmr can switch the proxy automatically as it rotates between accounts, so each
 </Note>
 
 <Tip>
-  Assign each account its own dedicated IP. Reusing one proxy across many accounts re-creates the exact shared-origin pattern proxies are meant to avoid.
+  Give each account its own dedicated IP. Reusing one proxy across several accounts re-creates the exact shared-origin pattern proxies are meant to avoid.
 </Tip>
 
 Not sure which provider fits your regions and budget? Reach out at [hi@warmr.so](mailto:hi@warmr.so) — we'll point you in the right direction.
