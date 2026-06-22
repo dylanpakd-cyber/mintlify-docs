@@ -21,34 +21,31 @@ A proxy gives an iPhone its own network identity so platforms don't see several 
   As soon as you run more than one iPhone, each one needs its own IP. Two iPhones sharing a single IP is the exact pattern proxies exist to avoid.
 </Note>
 
-## The two options that matter: dedicated ISP proxies and SIM cards
+## Recommended proxy types
 
-When you do need a proxy, not all of them are equal. Two options stand out because they give each iPhone a **clean, stable IP that only that phone uses**:
+For Warmr, the best all-round choice is a **dedicated ISP proxy over SOCKS5** — high quality, and the most cost-effective for the bandwidth a phone actually uses. Here are the proxy types worth using:
 
 <CardGroup cols={2}>
-  <Card title="Dedicated ISP proxies" icon="signal">
-    A static IP issued by a real internet provider and assigned to you alone — one ISP proxy per iPhone. It reads as a genuine residential connection **and** stays up reliably, so you get residential legitimacy without sharing the IP with anyone else. This is the recommended choice for most setups.
+  <Card title="ISP proxies (SOCKS5) — recommended" icon="star">
+    The best balance for Warmr: a dedicated static IP from a real ISP, assigned to one iPhone only. High quality and cost-effective for the bandwidth used. Get them from a quality provider like **IPRoyal** or **Bright Data**.
   </Card>
-  <Card title="A SIM card per iPhone" icon="sim-card">
-    Each iPhone uses its own SIM for mobile data, so it gets a unique carrier IP straight from a real mobile network — the most authentic signal there is, with no third-party proxy involved at all. Ideal if you're running a hardware rack.
+  <Card title="4G mobile proxies" icon="signal">
+    The gold standard for authenticity. Traffic routes through a real mobile network, indistinguishable from a genuine phone on cellular data. Use these whenever you can justify the cost.
+  </Card>
+  <Card title="Residential proxies" icon="house">
+    A strong alternative. IPs are assigned to real home connections, so they read as legitimate to platform detection. Choose providers with large, frequently rotated pools.
+  </Card>
+  <Card title="SIM card per iPhone" icon="sim-card">
+    Ideal for hardware farms. Each iPhone uses its own SIM for mobile data — a unique carrier IP with no third-party proxy service at all.
   </Card>
 </CardGroup>
 
 **Why dedicated matters:** platforms link phones that share an IP, and they penalize IPs with bad history. A **dedicated** IP solves both — it's used by one iPhone only, so there's no shared-origin pattern and no flags inherited from strangers who used the same IP before you. Shared and rotating pools fail on exactly these two points.
 
-## Providers: what to use and avoid
-
-<CardGroup cols={2}>
-  <Card title="Use" icon="circle-check">
-    Reputable providers like **AnyIP** and **Bright Data** for clean dedicated ISP or mobile IPs.
-  </Card>
-  <Card title="Avoid" icon="circle-x">
-    **IPRoyal** and similar budget providers. Their IPs are heavily shared and recycled, which is one of the fastest ways to land in a shadowban.
-  </Card>
-</CardGroup>
+## What to avoid
 
 <Warning>
-  Datacenter, shared, and free proxies are well known to platform trust-and-safety systems — trivially detected and quick to flag. Stick to dedicated ISP, residential, or mobile IPs.
+  Steer clear of cheap shared pools, datacenter proxies, and free proxies. Their IPs are heavily reused and recycled, well known to platform trust-and-safety systems, and one of the fastest ways to land in a shadowban — no matter which brand sells them. Stick to dedicated ISP, residential, mobile, or SIM IPs.
 </Warning>
 
 ## Always use the SOCKS5 type
