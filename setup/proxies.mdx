@@ -1,42 +1,40 @@
 ---
 title: "Proxies and IP setup for Warmr"
 sidebarTitle: "Proxies"
-description: "When you actually need a proxy, why dedicated ISP proxies and SIM cards are the right choice, and how to give each account its own IP with Stash or Shadowrocket."
+description: "When you actually need a proxy, why dedicated ISP proxies and SIM cards are the right choice, and how to give each iPhone its own dedicated IP with Stash or Shadowrocket."
 ---
 
-A proxy gives an account its own network identity so platforms don't see several accounts sharing one IP. The key thing to understand first: you only need them past a certain account density — below that, your home network is fine.
+A proxy gives an iPhone its own network identity so platforms don't see several phones (and all their accounts) coming from one shared IP. The unit that matters is the **iPhone**: each phone gets one dedicated IP, and the accounts on that phone share it.
 
 ## Do you actually need a proxy?
 
-The rule is about how many accounts you run **on a single iPhone**, not how many iPhones you have.
-
 <CardGroup cols={2}>
-  <Card title="1–2 accounts per iPhone → home network is fine" icon="house">
-    Two accounts coming from one home IP looks completely normal. No proxy, nothing to configure. Just leave Warmr's proxy list empty and run.
+  <Card title="Small setup → home network is fine" icon="house">
+    One iPhone with 1–2 accounts coming from your home IP looks completely normal. No proxy, nothing to configure — just leave Warmr's proxy list empty and run.
   </Card>
-  <Card title="3–4 accounts per iPhone → give each its own IP" icon="layer-group">
-    You can run up to **3–4 accounts per iPhone on TikTok and Instagram**. Once you go past 2 on one phone, that's when stacking them on a single home IP starts to look like a cluster — so each account should get a dedicated IP.
+  <Card title="Scaling up → one IP per iPhone" icon="layer-group">
+    Once you go past that — more accounts on a phone, or more than one phone — give **each iPhone its own dedicated IP** so they aren't all stacked on your single home IP.
   </Card>
 </CardGroup>
 
 <Note>
-  Adding more iPhones doesn't change this on its own — a second iPhone on your home network with 1–2 accounts is still fine. It's the number of accounts sharing one IP that matters.
+  As soon as you run more than one iPhone, each one needs its own IP. Two iPhones sharing a single IP is the exact pattern proxies exist to avoid.
 </Note>
 
 ## The two options that matter: dedicated ISP proxies and SIM cards
 
-When you do need a proxy, not all of them are equal. Two options stand out because they give each account a **clean, stable IP that only it uses**:
+When you do need a proxy, not all of them are equal. Two options stand out because they give each iPhone a **clean, stable IP that only that phone uses**:
 
 <CardGroup cols={2}>
   <Card title="Dedicated ISP proxies" icon="signal">
-    A static IP issued by a real internet provider and assigned to you alone. It reads as a genuine residential connection **and** stays up reliably — you get residential legitimacy without sharing the IP with anyone else. This is the recommended choice for most setups.
+    A static IP issued by a real internet provider and assigned to you alone — one ISP proxy per iPhone. It reads as a genuine residential connection **and** stays up reliably, so you get residential legitimacy without sharing the IP with anyone else. This is the recommended choice for most setups.
   </Card>
   <Card title="A SIM card per iPhone" icon="sim-card">
     Each iPhone uses its own SIM for mobile data, so it gets a unique carrier IP straight from a real mobile network — the most authentic signal there is, with no third-party proxy involved at all. Ideal if you're running a hardware rack.
   </Card>
 </CardGroup>
 
-**Why dedicated matters:** platforms link accounts that share an IP, and they penalize IPs with bad history. A **dedicated** IP solves both — it's used by one account only, so there's no shared-origin pattern and no flags inherited from strangers who used the same IP before you. Shared and rotating pools fail on exactly these two points.
+**Why dedicated matters:** platforms link phones that share an IP, and they penalize IPs with bad history. A **dedicated** IP solves both — it's used by one iPhone only, so there's no shared-origin pattern and no flags inherited from strangers who used the same IP before you. Shared and rotating pools fail on exactly these two points.
 
 ## Providers: what to use and avoid
 
@@ -55,30 +53,30 @@ When you do need a proxy, not all of them are equal. Two options stand out becau
 
 ## Always use the SOCKS5 type
 
-Whatever provider you choose, use its **SOCKS5** proxies — not HTTP, and not any other type. Warmr is built around SOCKS5, and it's the type that routes each account's traffic reliably through Stash or Shadowrocket.
+Whatever provider you choose, use its **SOCKS5** proxies — not HTTP, and not any other type. Warmr is built around SOCKS5, and it's the type that routes each iPhone's traffic reliably through Stash or Shadowrocket.
 
 <Warning>
   When you add a proxy in Warmr, set the type to **SOCKS5**. Most providers let you pick SOCKS5 when you create or export the proxy; if you're given both a SOCKS5 and an HTTP endpoint, use the SOCKS5 one.
 </Warning>
 
-## Set up per-account proxies on the iPhone
+## Assign one proxy to each iPhone
 
-Warmr can switch the proxy automatically as it rotates between accounts, so each account always uses its own IP. On the iPhone, you use a proxy client app — **Stash** or **Shadowrocket** (both on the App Store) — and Warmr tells it which server to use.
+Each iPhone gets its own dedicated proxy. On the iPhone, you use a proxy client app — **Stash** or **Shadowrocket** (both on the App Store) — and Warmr routes that phone's traffic through its assigned IP.
 
 <Steps>
   <Step title="Add your SOCKS5 proxies in Warmr">
     Open the **Proxy** section in Warmr and paste in your provider's **SOCKS5** proxies (host, port, and credentials), with the type set to SOCKS5.
   </Step>
+  <Step title="Pin one proxy to each iPhone">
+    Assign a single proxy to each connected device, so every iPhone has its own dedicated IP. No two iPhones should share the same proxy.
+  </Step>
   <Step title="Install Stash or Shadowrocket on the iPhone">
     Install whichever client you prefer from the App Store. Both work the same way with Warmr.
   </Step>
   <Step title="Import the config via QR">
-    Warmr's Proxy page shows a QR code (and a **Copy URL** option). In Stash or Shadowrocket, scan the QR to import the config, then turn the VPN toggle on.
+    Warmr's Proxy page shows a QR code (and a **Copy URL** option) for that device. In Stash or Shadowrocket, scan the QR to import the config, then turn the VPN toggle on.
 
     {/* SHOT: Warmr Proxy page QR code next to the iPhone Stash/Shadowrocket import screen */}
-  </Step>
-  <Step title="Let Warmr rotate automatically">
-    From here, Warmr switches the active server itself each time it moves to the next account. You don't touch anything by hand.
   </Step>
 </Steps>
 
@@ -86,8 +84,8 @@ Warmr can switch the proxy automatically as it rotates between accounts, so each
   Traffic leaves the iPhone directly to your proxy provider — the Mac is never on that path and never sees your account traffic. Keep the iPhone and Mac on the same wifi when you first import a config or add new servers.
 </Note>
 
-<Tip>
-  Give each account its own dedicated IP. Reusing one proxy across several accounts re-creates the exact shared-origin pattern proxies are meant to avoid.
-</Tip>
+<Warning>
+  **Never assign the same proxy IP to more than one iPhone.** One dedicated ISP proxy belongs to one iPhone — the accounts on that phone share its IP. It's one IP per phone, not one per account. IP collisions across phones are one of the most common causes of account flags at scale.
+</Warning>
 
 Not sure which provider fits your regions and budget? Reach out at [hi@warmr.so](mailto:hi@warmr.so) — we'll point you in the right direction.
