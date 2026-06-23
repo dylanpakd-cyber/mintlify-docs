@@ -10,10 +10,10 @@ A proxy gives an iPhone its own network identity so platforms don't see several 
 
 <CardGroup cols={2}>
   <Card title="Small setup → home network is fine" icon="house">
-    One iPhone with 1–2 accounts coming from your home IP looks completely normal. No proxy, nothing to configure — just leave Warmr's proxy list empty and run.
+    One iPhone with 1–2 accounts coming from your home IP looks completely normal: no proxy, nothing to configure. Just leave Warmr's proxy list empty and run.
   </Card>
   <Card title="Scaling up → one IP per iPhone" icon="layer-group">
-    Once you go past that — more accounts on a phone, or more than one phone — give **each iPhone its own dedicated IP** so they aren't all stacked on your single home IP.
+    Once you go past that (more accounts on a phone, or more than one phone), give **each iPhone its own dedicated IP** so they aren't all stacked on your single home IP.
   </Card>
 </CardGroup>
 
@@ -23,10 +23,10 @@ A proxy gives an iPhone its own network identity so platforms don't see several 
 
 ## Recommended proxy types
 
-For Warmr, the best all-round choice is a **dedicated ISP proxy over SOCKS5** — high quality, and the most cost-effective for the bandwidth a phone actually uses. Here are the proxy types worth using:
+For Warmr, the best all-round choice is a **dedicated ISP proxy over SOCKS5**: high quality, and the most cost-effective for the bandwidth a phone actually uses. Here are the proxy types worth using:
 
 <CardGroup cols={2}>
-  <Card title="ISP proxies (SOCKS5) — recommended" icon="star">
+  <Card title="ISP proxies (SOCKS5): recommended" icon="star">
     The best balance for Warmr: a dedicated static IP from a real ISP, assigned to one iPhone only. High quality and cost-effective for the bandwidth used. Get them from a quality provider like **IPRoyal** or **Bright Data**.
   </Card>
   <Card title="4G mobile proxies" icon="signal">
@@ -36,21 +36,21 @@ For Warmr, the best all-round choice is a **dedicated ISP proxy over SOCKS5** �
     A strong alternative. IPs are assigned to real home connections, so they read as legitimate to platform detection. Choose providers with large, frequently rotated pools.
   </Card>
   <Card title="SIM card per iPhone" icon="sim-card">
-    Ideal for hardware farms. Each iPhone uses its own SIM for mobile data — a unique carrier IP with no third-party proxy service at all.
+    Ideal for hardware farms. Each iPhone uses its own SIM for mobile data, a unique carrier IP with no third-party proxy service at all.
   </Card>
 </CardGroup>
 
-**Why dedicated matters:** platforms link phones that share an IP, and they penalize IPs with bad history. A **dedicated** IP solves both — it's used by one iPhone only, so there's no shared-origin pattern and no flags inherited from strangers who used the same IP before you. Shared and rotating pools fail on exactly these two points.
+**Why dedicated matters:** platforms link phones that share an IP, and they penalize IPs with bad history. A **dedicated** IP solves both. It's used by one iPhone only, so there's no shared-origin pattern and no flags inherited from strangers who used the same IP before you. Shared and rotating pools fail on exactly these two points.
 
 ## What to avoid
 
 <Warning>
-  Steer clear of cheap shared pools, datacenter proxies, and free proxies. Their IPs are heavily reused and recycled, well known to platform trust-and-safety systems, and one of the fastest ways to land in a shadowban — no matter which brand sells them. Stick to dedicated ISP, residential, mobile, or SIM IPs.
+  Steer clear of cheap shared pools, datacenter proxies, and free proxies. Their IPs are heavily reused and recycled, well known to platform trust-and-safety systems, and one of the fastest ways to land in a shadowban, no matter which brand sells them. Stick to dedicated ISP, residential, mobile, or SIM IPs.
 </Warning>
 
 ## Always use the SOCKS5 type
 
-Whatever provider you choose, use its **SOCKS5** proxies — not HTTP, and not any other type. Warmr is built around SOCKS5, and it's the type that routes each iPhone's traffic reliably through Stash or Shadowrocket.
+Whatever provider you choose, use its **SOCKS5** proxies, not HTTP, and not any other type. Warmr is built around SOCKS5, and it's the type that routes each iPhone's traffic reliably through Stash or Shadowrocket.
 
 <Warning>
   When you add a proxy in Warmr, set the type to **SOCKS5**. Most providers let you pick SOCKS5 when you create or export the proxy; if you're given both a SOCKS5 and an HTTP endpoint, use the SOCKS5 one.
@@ -58,7 +58,7 @@ Whatever provider you choose, use its **SOCKS5** proxies — not HTTP, and not a
 
 ## Assign one proxy to each iPhone
 
-Each iPhone gets its own dedicated proxy. On the iPhone, you use a proxy client app — **Stash** or **Shadowrocket** (both on the App Store) — and Warmr routes that phone's traffic through its assigned IP.
+Each iPhone gets its own dedicated proxy. On the iPhone, you use a proxy client app, **Stash** or **Shadowrocket** (both on the App Store), and Warmr routes that phone's traffic through its assigned IP.
 
 <Steps>
   <Step title="Add your SOCKS5 proxies in Warmr">
@@ -78,11 +78,11 @@ Each iPhone gets its own dedicated proxy. On the iPhone, you use a proxy client 
 </Steps>
 
 <Note>
-  Traffic leaves the iPhone directly to your proxy provider — the Mac is never on that path and never sees your account traffic. Keep the iPhone and Mac on the same wifi when you first import a config or add new servers.
+  Traffic leaves the iPhone directly to your proxy provider. The Mac is never on that path and never sees your account traffic. Keep the iPhone and Mac on the same wifi when you first import a config or add new servers.
 </Note>
 
 <Warning>
-  **Never assign the same proxy IP to more than one iPhone.** One dedicated ISP proxy belongs to one iPhone — the accounts on that phone share its IP. It's one IP per phone, not one per account. IP collisions across phones are one of the most common causes of account flags at scale.
+  **Never assign the same proxy IP to more than one iPhone.** One dedicated ISP proxy belongs to one iPhone. The accounts on that phone share its IP. It's one IP per phone, not one per account. IP collisions across phones are one of the most common causes of account flags at scale.
 </Warning>
 
-Not sure which provider fits your regions and budget? Reach out at [hi@warmr.so](mailto:hi@warmr.so) — we'll point you in the right direction.
+Not sure which provider fits your regions and budget? Reach out at [hi@warmr.so](mailto:hi@warmr.so). We'll point you in the right direction.

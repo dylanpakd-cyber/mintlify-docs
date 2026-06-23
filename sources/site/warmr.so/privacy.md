@@ -16,15 +16,15 @@ For users in the EU/UK, the relevant entity is the **data controller** for the p
 
 ### a. Information you give us
 
-- **Contact details** — your email address when you join the waitlist, request a demo, or contact us.
-- **Account & license details** — the license key you activate, and the identifier(s) of the device(s) you connect.
-- **Things you tell us** — feedback, support messages, and onboarding-call notes.
+- **Contact details**: your email address when you join the waitlist, request a demo, or contact us.
+- **Account & license details**: the license key you activate, and the identifier(s) of the device(s) you connect.
+- **Things you tell us**: feedback, support messages, and onboarding-call notes.
 
 ### b. Information collected automatically (product analytics)
 
-- **Usage and behavior** — features used, workflows ("flows") run, sessions started and completed, durations, in-app events, and error/crash diagnostics.
-- **Device and technical data** — operating system, app version, connected-device counts, and similar technical attributes.
-- **Website data** — pages viewed, referrer, approximate location derived from IP, and cookie/identifier data for analytics.
+- **Usage and behavior**: features used, workflows ("flows") run, sessions started and completed, durations, in-app events, and error/crash diagnostics.
+- **Device and technical data**: operating system, app version, connected-device counts, and similar technical attributes.
+- **Website data**: pages viewed, referrer, approximate location derived from IP, and cookie/identifier data for analytics.
 
 We collect this to operate the product, fix problems, understand how it is used, and improve quality. We do **not** sell this data.
 
