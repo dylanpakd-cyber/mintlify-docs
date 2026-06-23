@@ -1,7 +1,7 @@
 ---
 title: "Setup troubleshooting"
 sidebarTitle: "Troubleshooting"
-description: "Fixes for the most common Warmr setup and run-time problems — runner install errors, signing issues, stalled sessions, and device disconnects."
+description: "Fixes for the most common Warmr setup and run-time problems. Runner install errors, signing issues, stalled sessions, and device disconnects."
 ---
 
 Most setup problems come down to a handful of causes. Find your symptom below and apply the fix. If you're still stuck after trying these, reach out at [hi@warmr.so](mailto:hi@warmr.so).
@@ -41,7 +41,7 @@ Most setup problems come down to a handful of causes. Find your symptom below an
   </Accordion>
 
   <Accordion title='"Regenerate as App Manager" / the key role is too low'>
-    The API key's role must be **App Manager or higher** — the **Developer** role is blocked from creating signing profiles. Re-issue the key with the **App Manager** (or Admin) role.
+    The API key's role must be **App Manager or higher**: the **Developer** role is blocked from creating signing profiles. Re-issue the key with the **App Manager** (or Admin) role.
   </Accordion>
 
   <Accordion title="Certificate quota reached (2 of 2)">
@@ -49,7 +49,7 @@ Most setup problems come down to a handful of causes. Find your symptom below an
   </Accordion>
 
   <Accordion title="Warmr is waiting for the first device to register its certificate">
-    Expected when installing onto 5 or more devices at once — the first device registers its certificate with Apple, and the rest wait for it to finish. No action needed; it clears on its own.
+    Expected when installing onto 5 or more devices at once. The first device registers its certificate with Apple, and the rest wait for it to finish. No action needed; it clears on its own.
   </Accordion>
 
   <Accordion title="Xcode or Warmr doesn't see the iPhone">
@@ -64,7 +64,7 @@ Most setup problems come down to a handful of causes. Find your symptom below an
 ## Problems during warmups and posts
 
 <AccordionGroup>
-  <Accordion title="A session sits idle, then stalls — the device shows as standby">
+  <Accordion title="A session sits idle, then stalls: the device shows as standby">
     **StandBy is on.** Once StandBy activates on a charging, horizontal, idle iPhone, iOS blocks app launches. Turn it off at **Settings → StandBy → Off**, or keep the device upright while charging. See [Prepare each iPhone](/setup/iphone-settings).
   </Accordion>
 
@@ -73,7 +73,7 @@ Most setup problems come down to a handful of causes. Find your symptom below an
   </Accordion>
 
   <Accordion title="An iPhone disconnects mid-run">
-    Almost always a cable issue. Use an **original Apple or MFi-certified** cable — generic cables drop under sustained data load. For 4 or more devices, use a **powered** USB hub. A single lane dropping doesn't require restarting the whole app: replug the cable, re-confirm Trust if prompted, and resume.
+    Almost always a cable issue. Use an **original Apple or MFi-certified** cable. Generic cables drop under sustained data load. For 4 or more devices, use a **powered** USB hub. A single lane dropping doesn't require restarting the whole app: replug the cable, re-confirm Trust if prompted, and resume.
   </Accordion>
 
   <Accordion title='Warmr says the runner is "outdated" or asks you to reinstall'>
@@ -86,5 +86,5 @@ Most setup problems come down to a handful of causes. Find your symptom below an
 </AccordionGroup>
 
 <Note>
-  When an app changes its layout and a post or warmup action fails, that's not something you fix locally — Warmr ships a patch within 24–48 hours and your Mac app pulls it automatically on its next check-in.
+  When an app changes its layout and a post or warmup action fails, that's not something you fix locally. Warmr ships a patch within 24–48 hours and your Mac app pulls it automatically on its next check-in.
 </Note>

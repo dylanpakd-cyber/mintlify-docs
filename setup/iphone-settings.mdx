@@ -1,10 +1,10 @@
 ---
 title: "Prepare each iPhone for Warmr"
 sidebarTitle: "Prepare iPhones"
-description: "The iOS settings to configure on every iPhone before installing the runner — including the two settings, Light appearance and StandBy off, that cause most failed sessions."
+description: "The iOS settings to configure on every iPhone before installing the runner, including the two settings, Light appearance and StandBy off, that cause most failed sessions."
 ---
 
-Run through this checklist **once per iPhone, in order, before you install the runner.** Two of these — **Appearance = Light** and **StandBy = Off** — are the most common reason a newly set-up iPhone looks like it's hanging. Do them and you'll avoid the majority of first-run problems.
+Run through this checklist **once per iPhone, in order, before you install the runner.** Two of these, **Appearance = Light** and **StandBy = Off**, are the most common reason a newly set-up iPhone looks like it's hanging. Do them and you'll avoid the majority of first-run problems.
 
 <Warning>
   **The two that matter most.** Set **Appearance** to **Light** (not Dark, not Automatic) and turn **StandBy** **Off**. Skip either and sessions stall silently with no obvious error.
@@ -14,7 +14,7 @@ Run through this checklist **once per iPhone, in order, before you install the r
 
 <Steps>
   <Step title="Developer Mode = On">
-    **Settings → Privacy & Security → Developer Mode → On.** The iPhone prompts to restart — confirm. After it reboots, unlock the phone and confirm Developer Mode again at the second prompt.
+    **Settings → Privacy & Security → Developer Mode → On.** The iPhone prompts to restart. Confirm. After it reboots, unlock the phone and confirm Developer Mode again at the second prompt.
 
     **Why:** required on iOS 17+. Without Developer Mode, iOS refuses to launch the runner (which is signed with a development certificate).
 
@@ -23,7 +23,7 @@ Run through this checklist **once per iPhone, in order, before you install the r
     </Note>
   </Step>
   <Step title="Trust the Mac">
-    Plug the iPhone into the Mac. When **Trust This Computer?** appears, tap **Trust** and enter the passcode. If the prompt never appears, the device is already trusted — that's fine.
+    Plug the iPhone into the Mac. When **Trust This Computer?** appears, tap **Trust** and enter the passcode. If the prompt never appears, the device is already trusted. That's fine.
   </Step>
   <Step title="Auto-Lock = Never">
     **Settings → Display & Brightness → Auto-Lock → Never** (or at least 5 minutes).
@@ -31,14 +31,14 @@ Run through this checklist **once per iPhone, in order, before you install the r
     **Why:** a locked screen pauses automation. Never is simplest for a device that stays on your desk.
   </Step>
   <Step title="Brightness ≥ 50%">
-    **Settings → Display & Brightness** — set the slider to the middle or higher.
+    **Settings → Display & Brightness**: set the slider to the middle or higher.
 
     **Why:** Warmr reads the screen to find tap targets. A very dim screen makes that less reliable.
   </Step>
   <Step title="Appearance = Light (required)">
     **Settings → Display & Brightness → Appearance → Light.**
 
-    **Why:** on Dark appearance some app screens render in near-black, and Warmr can't reliably find on-screen targets — uploads stall. **Automatic** is just as bad because it flips to Dark at night and breaks scheduled sessions. Use **Light**.
+    **Why:** on Dark appearance some app screens render in near-black, and Warmr can't reliably find on-screen targets. Uploads stall. **Automatic** is just as bad because it flips to Dark at night and breaks scheduled sessions. Use **Light**.
   </Step>
   <Step title="Disable iCloud Photos">
     **Settings → Photos → iCloud Photos → Off.**
@@ -48,10 +48,10 @@ Run through this checklist **once per iPhone, in order, before you install the r
   <Step title="StandBy = Off (required)">
     **Settings → StandBy → Off.**
 
-    **Why:** StandBy is the iOS 17+ feature that turns a charging iPhone into a desk clock when it's lying on its side. It kicks in after ~30 seconds when the device is **charging + horizontal + locked + idle** — exactly the state a desk iPhone sits in. **Once StandBy is active, iOS blocks app launches**, so Warmr can't open the app and the session stalls.
+    **Why:** StandBy is the iOS 17+ feature that turns a charging iPhone into a desk clock when it's lying on its side. It kicks in after ~30 seconds when the device is **charging + horizontal + locked + idle**: exactly the state a desk iPhone sits in. **Once StandBy is active, iOS blocks app launches**, so Warmr can't open the app and the session stalls.
 
     <Note>
-      Less-reliable alternative: keep the iPhone **upright** while charging (a stand works) — StandBy only activates lying flat. **Portrait Orientation Lock does not help**; StandBy reads the accelerometer directly. Turning StandBy off is the clean fix and changes nothing else on the phone.
+      Less-reliable alternative: keep the iPhone **upright** while charging (a stand works). StandBy only activates lying flat. **Portrait Orientation Lock does not help**; StandBy reads the accelerometer directly. Turning StandBy off is the clean fix and changes nothing else on the phone.
     </Note>
   </Step>
   <Step title="Reduce Motion = On (optional)">
@@ -79,7 +79,7 @@ Use this as a quick pass before installing the runner:
 - [ ] Platform app installed and logged in
 
 <Tip>
-  Setting up several iPhones? Run the whole checklist on one device first and confirm a warmup works end to end before repeating it across the rack — it's faster to catch a missed setting once than ten times.
+  Setting up several iPhones? Run the whole checklist on one device first and confirm a warmup works end to end before repeating it across the rack. It's faster to catch a missed setting once than ten times.
 </Tip>
 
 Settings done? Next, [install the runner](/setup/install-runner) on each iPhone.
