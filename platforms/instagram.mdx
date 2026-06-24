@@ -4,6 +4,8 @@ sidebarTitle: "Instagram"
 description: "Warmr warms up Instagram accounts and auto-posts Reels, carousels, and photos on schedule using real iPhone taps. No API access required."
 ---
 
+import IphoneSetup from '/snippets/iphone-setup.mdx';
+
 Instagram is fully supported for both warmup and auto-posting. Warmr drives the Instagram iOS app with real on-screen taps. No Meta API, no third-party integrations, and no risk of the API-rate-limit bans that affect traditional scheduling tools.
 
 ## What Warmr does on Instagram
@@ -20,18 +22,11 @@ Instagram is fully supported for both warmup and auto-posting. Warmr drives the 
   </Card>
 </CardGroup>
 
-## Device setup for Instagram
+## Device setup
 
-Each iPhone needs a one-time setup before it can run Instagram:
+You can run up to **8 Instagram accounts** per iPhone, with **3–4 the best-practice sweet spot** for staying healthy.
 
-- **Accounts per iPhone:** up to 8, with **3–4 the best-practice sweet spot** for staying healthy.
-- **Developer Mode** on (Settings → Privacy & Security → Developer Mode).
-- **UI Automation** on (Settings → Developer → Enable UI Automation) — required, or no automation runs.
-- **Appearance = Light** and **StandBy = Off**: the two settings that cause most failed sessions.
-- **Auto-Lock = Never** and **Brightness ≥ 50%**.
-- The **Warmr runner** installed on the device.
-
-See [Prepare each iPhone](/setup/iphone-settings) for the full checklist, then [Install the runner](/setup/install-runner).
+<IphoneSetup />
 
 ## Supported content types
 
