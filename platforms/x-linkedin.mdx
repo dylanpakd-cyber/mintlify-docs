@@ -14,7 +14,7 @@ Warmr drives the X iOS app with the same real-tap approach it uses on every othe
   <Card title="Timeline Activity" icon="scroll">
     Warmr scrolls your timeline, likes posts, and follows accounts on a daily schedule to keep the account signaling as an active user.
   </Card>
-  <Card title="Search & Discovery" icon="magnifying-glass">
+  <Card title="Search & Discovery" icon="search">
     Warmr uses X's search and discovery features to diversify activity patterns and reduce repetition flags.
   </Card>
 </CardGroup>
@@ -38,6 +38,7 @@ Each iPhone needs a one-time setup before it can warm X or LinkedIn accounts:
 
 - **Accounts per iPhone:** up to 8 per platform. X and LinkedIn are **warm-only** today (no auto-posting), so they run alongside your TikTok and Instagram accounts on the same devices.
 - **Developer Mode** on (Settings → Privacy & Security → Developer Mode).
+- **UI Automation** on (Settings → Developer → Enable UI Automation) — required, or no automation runs.
 - **Appearance = Light** and **StandBy = Off**: the two settings that cause most failed sessions.
 - **Auto-Lock = Never** and **Brightness ≥ 50%**.
 - The **Warmr runner** installed on the device.
@@ -86,7 +87,7 @@ When X or LinkedIn ships an app update that moves a button or changes a screen l
 ## Related concepts
 
 <CardGroup cols={1}>
-  <Card title="Account Warmup" icon="temperature-arrow-up" href="/concepts/warmup">
+  <Card title="Account Warmup" icon="thermometer-sun" href="/concepts/warmup">
     Learn how Warmr's warmup lifecycle works and what signals it builds on each platform.
   </Card>
 </CardGroup>
