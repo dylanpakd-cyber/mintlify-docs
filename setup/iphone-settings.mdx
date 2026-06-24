@@ -4,7 +4,7 @@ sidebarTitle: "Prepare iPhones"
 description: "The iOS settings to configure on every iPhone before installing the runner, including the two settings, Light appearance and StandBy off, that cause most failed sessions."
 ---
 
-Run through this checklist **once per iPhone, in order, before you install the runner.** Two of these, **Appearance = Light** and **StandBy = Off**, are the most common reason a newly set-up iPhone looks like it's hanging. Do them and you'll avoid the majority of first-run problems.
+Run through this checklist **once per iPhone, in order, before you install the runner.** The one you cannot skip is **UI Automation** (Settings → Developer): without it, Warmr can't drive the phone and **nothing runs at all**. Two more, **Appearance = Light** and **StandBy = Off**, are the most common reason a set-up iPhone looks like it's hanging. Do all three and you'll avoid the majority of first-run problems.
 
 <iframe
   className="w-full aspect-video rounded-xl"
@@ -16,7 +16,7 @@ Run through this checklist **once per iPhone, in order, before you install the r
 />
 
 <Warning>
-  **The two that matter most.** Set **Appearance** to **Light** (not Dark, not Automatic) and turn **StandBy** **Off**. Skip either and sessions stall silently with no obvious error.
+  **The three that matter most.** Turn **UI Automation** **On** (Settings → Developer) — without it nothing runs at all. Set **Appearance** to **Light** (not Dark, not Automatic) and turn **StandBy** **Off** — skip either and sessions stall silently with no obvious error.
 </Warning>
 
 ## The settings, in order
@@ -30,6 +30,11 @@ Run through this checklist **once per iPhone, in order, before you install the r
     <Note>
       If **Developer Mode** isn't in Privacy & Security, the option only appears after the iPhone has been connected to a Mac running Xcode at least once. Connect it to your Mac, then re-check.
     </Note>
+  </Step>
+  <Step title="Enable UI Automation (required)">
+    **Settings → scroll to the very bottom → Developer → Enable UI Automation → On.** The **Developer** menu only appears at the bottom of Settings once Developer Mode (above) is on.
+
+    **Why:** this is the switch that lets the runner actually drive the phone. **Without UI Automation, Warmr cannot tap or type and no session runs at all** — the Mac connects, but every automation attempt fails (this is the cause of the **Code 41** error). It's the single most-skipped step, so don't move on until it's on.
   </Step>
   <Step title="Trust the Mac">
     Plug the iPhone into the Mac. When **Trust This Computer?** appears, tap **Trust** and enter the passcode. If the prompt never appears, the device is already trusted. That's fine.
@@ -78,6 +83,7 @@ Run through this checklist **once per iPhone, in order, before you install the r
 Use this as a quick pass before installing the runner:
 
 - [ ] Developer Mode = On
+- [ ] **UI Automation = On** (Settings → Developer)
 - [ ] Trusted this Mac
 - [ ] Auto-Lock = Never (or ≥ 5 minutes)
 - [ ] Brightness ≥ 50%
