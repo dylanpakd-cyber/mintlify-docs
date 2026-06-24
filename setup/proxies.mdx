@@ -1,7 +1,7 @@
 ---
-title: "Proxies and IP setup for Warmr"
+title: "Set Up Proxies to Give Each Warmr iPhone Its Own IP"
 sidebarTitle: "Proxies"
-description: "When you actually need a proxy, why dedicated ISP proxies and SIM cards are the right choice, and how to give each iPhone its own dedicated IP with Stash or Shadowrocket."
+description: "Assign a dedicated ISP or SOCKS5 proxy to each iPhone when running two or more devices, then configure it with Stash or Shadowrocket."
 ---
 
 A proxy gives an iPhone its own network identity so platforms don't see several phones (and all their accounts) coming from one shared IP. The unit that matters is the **iPhone**: each phone gets one dedicated IP, and the accounts on that phone share it.
@@ -91,7 +91,6 @@ Each iPhone gets its own dedicated proxy. On the iPhone, you use a proxy client 
   <Step title="Import the config via QR">
     Warmr's Proxy page shows a QR code (and a **Copy URL** option) for that device. In Stash or Shadowrocket, scan the QR to import the config, then turn the VPN toggle on.
 
-    {/* SHOT: Warmr Proxy page QR code next to the iPhone Stash/Shadowrocket import screen */}
   </Step>
 </Steps>
 
