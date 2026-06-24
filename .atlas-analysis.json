@@ -1,7 +1,7 @@
 {
   "projectType": "saas",
   "projectName": "Warmr",
-  "projectDescription": "A Mac app that automates iPhone farm management — warming up social accounts and auto-posting to TikTok, Instagram, X, and LinkedIn on a schedule.",
+  "projectDescription": "Warmr is a Mac app that automates social media account warm-up and scheduled posting to TikTok and Instagram across multiple real iPhones.",
   "theme": "almond",
   "primaryColor": "#cafa3b",
   "lightColor": "#647c24",
@@ -9,7 +9,7 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Guide",
+        "tab": "Docs",
         "groups": [
           {
             "group": "Get Started",
@@ -22,35 +22,46 @@
           {
             "group": "Core Concepts",
             "pages": [
-              "concepts/account-lifecycle",
-              "concepts/warmup",
-              "concepts/cloud-drop",
-              "concepts/scheduling"
+              "concepts/account-warmup",
+              "concepts/iphone-farm",
+              "concepts/cloud-drop"
             ]
           },
           {
-            "group": "Setup",
+            "group": "Guides",
             "pages": [
-              "setup/iphones",
-              "setup/proxies",
-              "setup/adding-accounts",
-              "setup/posting-schedule"
-            ]
-          },
-          {
-            "group": "Platforms",
-            "pages": [
-              "platforms/tiktok",
-              "platforms/instagram",
-              "platforms/x-linkedin"
+              "guides/adding-accounts",
+              "guides/scheduling-posts",
+              "guides/managing-devices",
+              "guides/cloud-drop-usage"
             ]
           },
           {
             "group": "Plans & Billing",
             "pages": [
               "billing/plans",
-              "billing/license-key",
+              "billing/license-keys",
               "billing/faq"
+            ]
+          },
+          {
+            "group": "Troubleshooting",
+            "pages": [
+              "troubleshooting/common-issues",
+              "troubleshooting/account-health",
+              "troubleshooting/device-setup"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Legal",
+        "groups": [
+          {
+            "group": "Legal",
+            "pages": [
+              "legal/privacy",
+              "legal/terms"
             ]
           }
         ]
@@ -58,21 +69,19 @@
     ]
   },
   "keyFeatures": [
-    "Shadowban-safe account warmup (scroll, like, follow, search phases)",
-    "Auto-posting to TikTok, Instagram, X, and LinkedIn on schedule",
-    "Cloud Drop — upload content from phone or laptop, Mac pulls and posts",
-    "Drives real iPhones via on-screen taps (no APIs or emulators)",
-    "One Mac controls 10+ iPhones simultaneously with double-post locks",
-    "Auto-resume after device stalls or Mac reboots via checkpointed state",
-    "Carousels and music support",
-    "Free 7-day trial, no credit card required"
+    "Automated account warm-up (scroll, like, follow) on real iPhones",
+    "Scheduled auto-posting to TikTok and Instagram",
+    "One Mac drives 10+ iPhones simultaneously, up to 8 accounts per platform per iPhone",
+    "Cloud Drop: queue content from any device for your Mac to post",
+    "Crash recovery and auto-resume with no double-posts",
+    "Data stays local on your Mac",
+    "No API bots or emulators — real iPhone interactions"
   ],
   "publicApiSurface": [
+    "Cloud Drop upload interface",
     "License key activation",
-    "Cloud Drop upload queue",
-    "Posting schedule configuration",
-    "Account warmup cycle management",
-    "Device (iPhone) activation per plan",
-    "Per-account proxy / IP assignment"
+    "Account scheduling configuration",
+    "Device (iPhone) management",
+    "Post queue management"
   ]
 }
