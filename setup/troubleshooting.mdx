@@ -25,7 +25,7 @@ Most setup problems come down to a handful of causes. Find your symptom below an
   </Accordion>
 
   <Accordion title='"Failed to register bundle identifier"'>
-    A free Apple ID can't reuse a bundle ID another developer already claimed. Always start from a fresh project via Warmr's **Devices → Download Xcode Project** (it ships a unique ID). If it still collides, open the **General** tab in Xcode and set **Bundle Identifier** to something unique like `com.k7m2p9.WarmrRunner` on **both** targets (the second must use the first as a prefix).
+    With a current runner project this shouldn't happen: when you pick your **Team** in Signing & Capabilities, the runner's bundle identifier becomes `com.<your-team-id>.warmrrunner` automatically — unique to your team, so there's nothing to collide with. **Don't edit the Bundle Identifier by hand** — a custom value stops Warmr from finding the runner you install. If you still hit this, you're on an old downloaded project: re-download via **Devices → Download Xcode Project**, then pick your Team again on **both** targets.
   </Accordion>
 
   <Accordion title='"Maximum App ID limit reached"'>

@@ -111,6 +111,10 @@ Apple requires every app installed on an iPhone to be signed. Warmr offers two w
           You must set the Team on **both** targets: **WarmrRunner** *and* **WarmrRunnerUITests** in the TARGETS list. Setting one does not set the other. If WarmrRunnerUITests has no team, the runner fails to install with a code-signature error.
         </Warning>
 
+        <Note>
+          The **Bundle Identifier** becomes `com.<your-team-id>.warmrrunner` automatically once you pick your Team — unique to you, so it registers cleanly. **Don't edit it by hand**; a custom value stops Warmr from finding the runner you install.
+        </Note>
+
       </Step>
       <Step title="Plug in and unlock your iPhone">
         Connect the iPhone via USB and unlock it. If iOS shows **Trust This Computer?**, tap **Trust** and enter your passcode.
@@ -128,11 +132,14 @@ Apple requires every app installed on an iPhone to be signed. Warmr offers two w
       <Step title="Repeat for each iPhone">
         Switch the destination to the next device and press `⌘U` again. One free Apple ID covers up to 3 devices.
       </Step>
+      <Step title="Tell Warmr your Team ID">
+        In Warmr, open **Devices → "Sign via Xcode Manually"** and paste your 10-character **Team ID** into **Your Apple Team ID**, then click **Save**. This points Warmr at the exact runner you just installed (`com.<your-team-id>.warmrrunner`) instead of the default. Find the ID at [developer.apple.com/account](https://developer.apple.com/account) → Membership, or read it from Xcode's build log.
+      </Step>
     </Steps>
 
     <AccordionGroup>
       <Accordion title='Xcode says "Failed to register bundle identifier"'>
-        Free Apple IDs can't reuse a bundle ID that another developer already claimed. Open the **General** tab (next to Signing & Capabilities) and change **Bundle Identifier** to something unique, for example `com.k7m2p9.WarmrRunner` (pick any short random string). Do it for both targets. The second target's bundle ID must start with the first as a prefix. Always download a fresh project from Warmr's Devices tab, since it ships a pre-scoped unique ID.
+        With a current runner project this shouldn't happen: picking your **Team** makes the bundle identifier `com.<your-team-id>.warmrrunner` automatically — unique to your team. **Leave the Bundle Identifier field alone**; typing a custom value there stops Warmr from finding the runner you install. If you still see this, re-download a fresh project from **Devices → Download Xcode Project** and set your Team again on both targets.
       </Accordion>
       <Accordion title='"Maximum App ID limit reached"'>
         Free Apple IDs are capped at 10 unique App IDs per 7 days. Wait it out, use a different Apple ID, or move to a paid Apple Developer account.
