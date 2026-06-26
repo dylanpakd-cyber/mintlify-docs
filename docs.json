@@ -52,6 +52,7 @@
             "pages": [
               "concepts/account-lifecycle",
               "concepts/warmup",
+              "concepts/proxies-and-ips",
               "concepts/cloud-drop",
               "concepts/scheduling"
             ]
