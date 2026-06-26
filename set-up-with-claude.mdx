@@ -1,0 +1,87 @@
+---
+title: "Set Up Warmr with an AI Agent (Claude)"
+sidebarTitle: "Set up with Claude"
+description: "Hand the technical setup to an AI agent. Copy one prompt into Claude (or any coding agent) and it installs the runner, drives the warmrctl CLI, and walks you through the few taps only you can do."
+---
+
+Warmr ships its own **agent skill**: a setup companion for Claude Code (or any coding agent on your Mac). Instead of following every step by hand, you paste one prompt and the agent does the parts a machine can do (downloading the runner, building and installing it, checking each step) while clearly telling you the few taps only you can do: trusting the phone, Developer Mode, Xcode signing, and logging into TikTok/Instagram.
+
+<Note>
+  This is optional. Everything the agent does, you can do yourself by following [Installation](/installation) and the [Setup](/setup/iphones) pages. The agent just removes the technical friction.
+</Note>
+
+## Copy this prompt into your agent
+
+Open Claude Code (or your agent of choice) in any folder on the same Mac and paste:
+
+```text
+Help me set up Warmr, a Mac app (warmr.so) that warms up and posts to TikTok/Instagram accounts from real iPhones.
+
+If Warmr.app is already installed, first put its CLI + skill on my machine (one time):
+  /Applications/Warmr.app/Contents/MacOS/warmrctl install
+  warmrctl skill install
+Then read the "warmr" skill, run `warmrctl setup status` to see exactly what's left, and walk me through each remaining step. Do the shell/build parts for me, and point me to the right short video for the few taps only I can do (Trust the phone, Developer Mode, Xcode signing, logging into TikTok).
+
+If Warmr isn't installed yet, read https://docs.warmr.so/installation and the 2-minute screencaps at https://docs.warmr.so/video-guide, then walk me through downloading and installing it first.
+
+Do everything a machine can do; clearly tell me the few taps only I can do.
+```
+
+That prompt works **whether or not Warmr is installed yet**: with the app present, the agent installs the bundled CLI + skill and lets the skill drive; without it, the agent reads these public docs and gets you to install first.
+
+## What the two commands do
+
+If you already have the Warmr Mac app, these are the only setup commands you run by hand. The agent does the rest:
+
+<Steps>
+  <Step title="Install the warmrctl CLI">
+    ```bash
+    /Applications/Warmr.app/Contents/MacOS/warmrctl install
+    ```
+    Puts the `warmrctl` command (bundled inside Warmr.app) onto your `PATH`. Add `--user` if `/usr/local/bin` is not writable.
+  </Step>
+  <Step title="Install the Warmr agent skill">
+    ```bash
+    warmrctl skill install
+    ```
+    Copies the Warmr setup skill into `~/.claude/skills/warmr/` so your own Claude Code knows exactly how to set Warmr up and operate it.
+  </Step>
+</Steps>
+
+<Tip>
+  Already inside the app? The same prompt and **Copy setup prompt** button live on the **License** page and in **Setup Center** of the Warmr Mac app.
+</Tip>
+
+## You do the taps; the agent does the rest
+
+Apple makes a few steps physically impossible to automate. The agent is honest about this: it walks you through them and points you to the matching short video, then detects when you're done and continues.
+
+| You (a one-time tap) | The agent |
+|---|---|
+| Plug in + **Trust** the iPhone, enable **Developer Mode** | Detects the device, polls until it's ready |
+| Add your Apple ID to Xcode + set the signing **Team** | Builds and installs the runner from the shell |
+| Trust the developer certificate on the phone | Confirms the runner is installed and healthy |
+| Log into TikTok/Instagram on the phone | Adds the account and starts warmups on schedule |
+
+## The videos the agent points you to
+
+These are the same 2-minute screencaps the agent links at each step. You can also watch them all on the [Video guide](/video-guide).
+
+<CardGroup cols={2}>
+  <Card title="Set up your iPhones" icon="smartphone" href="https://www.youtube.com/watch?v=7Fc6Q6iTFHw&list=PLqezdr4LtvlLUgYSHr6ccsba-uFiseWgl">
+    Developer Mode, Light appearance, StandBy off, USB, and the Trust prompt.
+  </Card>
+  <Card title="Install the runner with Xcode" icon="hammer" href="https://www.youtube.com/watch?v=FozCNvEdDH8&list=PLqezdr4LtvlLUgYSHr6ccsba-uFiseWgl">
+    Open the Xcode project, set the signing Team on both targets, and ⌘U.
+  </Card>
+  <Card title="How the Warmr app works" icon="layout-dashboard" href="https://www.youtube.com/watch?v=FCF2TGtorPE&list=PLqezdr4LtvlLUgYSHr6ccsba-uFiseWgl">
+    The app tour: Schedule, Accounts, Activity, and the license key.
+  </Card>
+  <Card title="Start your first account list" icon="user-plus" href="https://www.youtube.com/watch?v=2vC3UwcNplU&list=PLqezdr4LtvlLUgYSHr6ccsba-uFiseWgl">
+    Log into TikTok/Instagram on the phone and add the account.
+  </Card>
+</CardGroup>
+
+<Note>
+  The agent only ever proposes a command and runs it after telling you what it does. It never touches your account passwords or secrets. You stay in control of every device-touching step.
+</Note>
