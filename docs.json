@@ -81,6 +81,7 @@
             "pages": [
               "billing/plans",
               "billing/license-key",
+              "billing/affiliate-program",
               "billing/faq"
             ]
           }
