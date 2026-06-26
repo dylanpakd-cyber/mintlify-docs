@@ -13,6 +13,22 @@ Most setup problems come down to a handful of causes. Find your symptom below an
     The developer certificate hasn't been trusted on the iPhone yet. On the device, go to **Settings → General → VPN & Device Management**, tap your developer profile, and tap **Trust**. Then click **Reinstall** in Warmr and start the run again.
   </Accordion>
 
+  <Accordion title='Xcode says "the test runner exited with code 45", or the runner icon opens then bounces back to the home screen'>
+    **This is expected — the runner installed fine.** Two things to know first:
+
+    - The runner has **no interface of its own.** Tapping its home-screen icon just opens a blank screen (or closes right away). That's normal — Warmr launches and drives the runner for you, so you never tap it.
+    - **"Exited with code 45" after ⌘U is not a failure.** The runner is a long-running automation host, so the ⌘U test never "finishes" — you can ignore that message. The icon being on your phone means the install succeeded.
+
+    The one remaining step is to **trust the developer certificate** so iOS will actually run it:
+
+    1. **Settings → Privacy & Security → Developer Mode → On** (the phone restarts, then tap **Turn On**).
+    2. **Settings → General → VPN & Device Management → Developer App** → tap your Apple ID → **Trust** → confirm.
+    3. Tap the **WarmrRunner** icon **once** (iOS won't let Warmr launch a developer app you've never opened by hand), then swipe it closed.
+    4. Back in Warmr → **Devices**, the phone goes green. Start a short warmup to confirm.
+
+    Until you trust the certificate (and Developer Mode is on), iOS kills the runner the instant it launches — which is exactly what "code 45" and "opens then closes" both mean.
+  </Accordion>
+
   <Accordion title="The runner installed, but warmups can't connect / nothing happens">
     You almost certainly built with the **▶ Run button (`⌘R`)** instead of **Product → Test (`⌘U`)**. Run installs the app but **not** the automation runner. Open the project in Xcode, select the **WebDriverAgentRunner** scheme, and run **Product → Test (`⌘U`)** again. See [Install the runner](/setup/install-runner).
   </Accordion>
