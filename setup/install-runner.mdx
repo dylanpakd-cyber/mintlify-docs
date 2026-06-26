@@ -128,6 +128,10 @@ Apple requires every app installed on an iPhone to be signed. Warmr offers two w
         <Warning>
           Use **Test (`⌘U`)**, **not** the ▶ Run button (`⌘R`). The Run button installs the app but **not** the automation runner, and then your warmups silently can't connect. This is the #1 cause of "the runner is installed but nothing happens."
         </Warning>
+
+        <Note>
+          Xcode will say **"the test runner exited with code 45"** and the new **WarmrRunner** icon may open and immediately close if you tap it. **Both are normal** — the runner is a long-running automation host with no interface of its own, so its ⌘U test never "finishes." The icon appearing on your phone means the install worked. Your next step is to **trust the developer certificate** (next section) so iOS will let Warmr launch it.
+        </Note>
       </Step>
       <Step title="Repeat for each iPhone">
         Switch the destination to the next device and press `⌘U` again. One free Apple ID covers up to 3 devices.
