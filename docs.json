@@ -48,6 +48,12 @@
             ]
           },
           {
+            "group": "FAQ",
+            "pages": [
+              "faq"
+            ]
+          },
+          {
             "group": "Core Concepts",
             "pages": [
               "concepts/account-lifecycle",
