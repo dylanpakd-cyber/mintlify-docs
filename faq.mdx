@@ -1,0 +1,71 @@
+---
+title: "Warmr FAQ: detection, pricing, hardware, and how it compares"
+sidebarTitle: "FAQ"
+description: "Is Warmr detectable? How does it compare to phone farms and Android cloud phones? Straight answers on pricing, hardware, proxies, platforms, and what warmup actually does."
+---
+
+These are the questions people ask while deciding whether Warmr is right for them: is it safe, how it compares to the alternatives, what it costs, and what you actually need to run it. If you are looking for step-by-step setup instead, start with the [Quickstart](/quickstart). For billing, data privacy, and reliability questions, see the [additional FAQ](/billing/faq). For anything not covered here, reach out at [hi@warmr.so](mailto:hi@warmr.so).
+
+<AccordionGroup>
+  <Accordion title="Is Warmr actually undetectable? How does it avoid shadowbans?">
+    Warmr drives a real iPhone you own with real on-screen taps, so to TikTok and Instagram it reads as a person, not automation. There are no API calls, no emulators, and no headless browsers, which are exactly the signatures platforms catch. Warmr reads the screen from real screenshots (computer vision) rather than injecting into the app, and it wraps every post in genuine warmup activity so posting looks like a natural moment inside a real session. Warmup actions also run in randomized order and timing so no classifier can fingerprint them.
+
+    The honest part: no tool can guarantee outcomes, and anyone who promises that is not being straight with you. Warmr controls the on-device behavior. You control the network side, which means a dedicated IP per iPhone and a sane posting cadence. The most common cause of flags is not the app, it is a bad or shared proxy. See [How warmup works](/concepts/warmup).
+  </Accordion>
+
+  <Accordion title="How is Warmr different from phone farms, GeeLark, or Android cloud phones?">
+    Most of the field (the GeeLark and TikMatrix style of tool) runs **Android cloud phones**: rented, billed per minute, with an emulated device identity. Warmr is the opposite: **real iPhones you own**, on-device, no jailbreak, no emulator, and no unofficial API. iPhone hardware has consistently outperformed Android farms on reach, and cloud phones carry fingerprints that real devices do not.
+
+    Compared to the other options:
+    - **Rented done-for-you farms** run $2,000+/mo and own the hardware for you, which also means they hold your accounts. Warmr keeps everything on devices you own.
+    - **Unofficial-API or "bot" tools** are the fastest way to the "300-view jail." Warmr never touches unofficial APIs.
+    - **Doing it manually** does not scale past a phone or two, which is the problem Warmr exists to solve.
+  </Accordion>
+
+  <Accordion title="Why is Warmr so much cheaper than the alternatives?">
+    Because Warmr is automation **software** for iPhones you already own, not a done-for-you farm that rents you hardware. You bring the phones, so you keep the margin. Plans:
+
+    - **Free** — 7-day full trial, no card, 1 iPhone, 8 accounts.
+    - **Solo** — $40/mo, 1 iPhone, 8 accounts.
+    - **Rack** — $80/mo, 3 iPhones, 24 accounts. The most popular plan for growing operators.
+    - **Scale** — $150/mo, unlimited iPhones and accounts.
+
+    Yearly billing is two months free. Compare that to rented farms at $2,000+/mo or per-phone tools that charge $99–150 per phone and do not even include proxies. See [Plans](/billing/plans).
+  </Accordion>
+
+  <Accordion title="What hardware do I need, and do I own the iPhones?">
+    You supply and own the iPhones. Warmr requires real, physical iPhones (no emulators, cloud phones, virtual devices, or jailbroken phones, which can get accounts flagged). Your **Mac is the orchestrator**: it connects to each iPhone over a USB cable, which is required at all times (Wi-Fi is not an alternative), and one Mac can drive roughly 10 or more iPhones at once. A powered USB hub is recommended at 6+ devices.
+
+    Recommended models are iPhone 13, 14, or 15 on iOS 17–18. iPhone 12 is the minimum; iPhone 11 and XR work but run slower. Older models (X, XS, SE 1st gen, 8 and earlier) and iOS 16 or below are not supported. Leave at least 5 GB free per phone. See [iPhones](/setup/iphones).
+  </Accordion>
+
+  <Accordion title="How many accounts can I run per iPhone?">
+    Up to 8 accounts per platform, but the healthy sweet spot is **3 to 4 accounts per iPhone**. Past about 5 or 6 accounts on a phone, the platform's detection risk climbs and reach tends to drop. If you want to push higher per phone, a stronger network setup (a dedicated SIM per phone) helps. See [Account lifecycle](/concepts/account-lifecycle).
+  </Accordion>
+
+  <Accordion title="Do I need proxies? Can I share one IP across phones?">
+    The unit of IP is the **iPhone, not the account**: one dedicated IP per phone, and the accounts on that phone share it. Never assign the same IP to two phones, that is the exact pattern proxies exist to avoid and a leading cause of flags at scale.
+
+    You bring your own proxies (Warmr does not sell them, but walks you through setup on a call). A single iPhone running 1 or 2 accounts on your home IP needs no proxy. As soon as you run two or more phones, each needs its own IP. Warmr is built around **SOCKS5**; recommended types in order are ISP proxies (the all-rounder, often a few dollars a month), 4G mobile (the gold standard), residential, and a dedicated SIM per phone (best for hardware farms). On-device you use Stash or Shadowrocket, configured from the QR code on Warmr's Proxy page. Traffic goes from the iPhone straight to your proxy provider, so your Mac is never on the account-traffic path. See [Proxies](/setup/proxies).
+  </Accordion>
+
+  <Accordion title="Which platforms does Warmr support, and can it post to all of them?">
+    Warmr supports four platforms: **TikTok, Instagram, X, and LinkedIn**. Auto-posting today is **TikTok and Instagram only**. X and LinkedIn are currently warm-only, meaning Warmr keeps those accounts active with real engagement but does not auto-post to them yet. See [X and LinkedIn](/platforms/x-linkedin).
+  </Accordion>
+
+  <Accordion title="What does warmup actually do? Does it comment?">
+    Warmup performs real, human-like actions: scrolling and watching, liking a natural proportion of what it sees, following a few relevant accounts, and running niche keyword searches. It does **not** comment, because commenting reliably would require an unofficial API and that puts your account at risk. New accounts watch full videos to read as human, and warmup runs daily and wraps every post (before and after) so an account never looks like a bot that only wakes up to publish. See [How warmup works](/concepts/warmup).
+  </Accordion>
+
+  <Accordion title="Does Warmr create or choose my content?">
+    No. Warmr does not generate your content or decide what to post. You supply the clips and assign target accounts through [Cloud Drop](/concepts/cloud-drop), and Warmr distributes each post into the next open slot for those accounts. The "what to post" judgment stays with you; Warmr automates the human-like posting and warmup behavior around it. During warmup, it does bias the algorithm toward your niche by searching relevant keywords and engaging with the results, but that is signaling intent, not understanding your content.
+  </Accordion>
+
+  <Accordion title="Is there an API I can post through?">
+    There is no public API today, and it is not a near-term commitment, though we may add one in the future. The programmatic surface that exists now is `warmrctl`, a local command-line tool that controls the running Warmr app over a local socket (no network transport), plus an installable agent skill so an AI agent can drive setup. To feed content in programmatically, use [Cloud Drop](/concepts/cloud-drop): drop clips at app.warmr.so from any browser and they queue to the accounts you choose. Worth knowing: posting through a platform's own API typically kills reach, so on-device posting is the point, not a limitation. See [Set up with Claude](/set-up-with-claude).
+  </Accordion>
+
+  <Accordion title="How do I get help and onboarding?">
+    A few options: email [hi@warmr.so](mailto:hi@warmr.so), join the Discord, or book a setup call (proxy setup specifically is walked through live). To self-serve, follow the [Quickstart](/quickstart), the [9-video setup playlist](/video-guide), or paste one prompt into Claude and let it install the runner and drive setup ([Set up with Claude](/set-up-with-claude)). Your first device takes about 20 to 30 minutes, and the first warmup runs in under 10 minutes.
+  </Accordion>
+</AccordionGroup>
