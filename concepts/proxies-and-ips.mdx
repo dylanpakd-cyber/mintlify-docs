@@ -1,0 +1,179 @@
+---
+title: "Proxies, VPNs & IPs: the lingo, explained"
+sidebarTitle: "Proxies & IPs"
+description: "What proxies, VPNs, mobile vs residential IPs, eSIMs, and SOCKS5 actually mean — and why your IP setup is what keeps a multi-account iPhone farm off the shadowban list."
+---
+
+If you run more than one or two accounts, the single biggest thing that decides whether they thrive or get
+quietly suppressed isn't your content — it's your **IP address**. Platforms link accounts that share an IP,
+and they distrust IPs with a bad history. This page explains every term you'll run into, in plain English,
+and the handful of rules that actually matter. When you're ready to configure it, see
+[Set up proxies](/setup/proxies).
+
+## Do you even need this?
+
+<CardGroup cols={2}>
+  <Card title="One phone, 1–2 accounts → no proxy" icon="house">
+    A single iPhone with one or two accounts coming from your home wifi looks completely normal. Leave
+    Warmr's proxy list empty and run. Nothing to configure.
+  </Card>
+  <Card title="2+ phones, or many accounts → one IP per phone" icon="layers">
+    The moment you run more than one iPhone, each one needs its **own** dedicated IP. Two phones sharing one
+    IP is the exact pattern proxies exist to avoid.
+  </Card>
+</CardGroup>
+
+## The 60-second version
+
+If you read nothing else:
+
+- Use a **dedicated** proxy — **mobile** is the most trusted, **residential** or **ISP** is the
+  cost-effective default. Avoid datacenter and free/shared proxies.
+- Always pick the **SOCKS5** endpoint, never HTTP.
+- **One IP per iPhone.** The accounts on a phone share that phone's IP; no two phones share an IP.
+- **Never use a consumer VPN** (NordVPN, ExpressVPN, etc.) — it's the fastest way to a shadowban. A proxy is
+  not a VPN; see below.
+- You almost certainly **don't need a special eSIM**.
+
+## Why mobile proxies are "the best"
+
+Mobile (4G/5G) proxies route your traffic through a real cellular carrier. The reason operators swear by them
+is **CGNAT** (Carrier-Grade NAT): mobile carriers legitimately share one public IP address among hundreds or
+thousands of real subscribers at once. A platform **cannot blacklist that IP without knocking real paying
+customers offline**, so mobile IPs are nearly impossible to ban. On top of that, the vast majority of real
+TikTok and Instagram traffic is on mobile data, so a mobile carrier IP is exactly the profile the algorithm
+expects.
+
+The trade-off is cost: mobile proxies are several times more expensive per GB than residential or ISP. So the
+practical pecking order is:
+
+| Trust | Type | When to use |
+| --- | --- | --- |
+| Highest | **Mobile (4G/5G)** | Account creation and your most valuable accounts |
+| High | **Residential / ISP (SOCKS5)** | The cost-effective default for most phones — Warmr's recommendation |
+| Low | **Datacenter** | Avoid — instantly recognizable and heavily flagged |
+
+<Warning>
+  Steer clear of cheap shared pools, datacenter, and free proxies no matter who sells them. Their IPs are
+  recycled across countless users and well known to platform trust-and-safety systems — one of the fastest
+  paths to a shadowban.
+</Warning>
+
+## VPN vs proxy — and why a VPN gets you shadowbanned
+
+This is the most common self-inflicted ban, so it's worth being precise.
+
+<CardGroup cols={2}>
+  <Card title="Consumer VPN — avoid" icon="ban">
+    A VPN tunnels **all** your traffic through one shared exit server. Those exit IPs (Nord, Express, etc.)
+    are well-known **datacenter** ranges shared by tens of thousands of people, and platforms flag them on
+    connection. One IP for everything also means no per-account separation.
+  </Card>
+  <Card title="Proxy — use this" icon="circle-check">
+    A proxy routes a specific phone (or app) through an IP **you** choose — and that IP can be mobile or
+    residential, which reads as a normal user. You get one dedicated IP per phone, which is exactly what
+    multi-account work needs.
+  </Card>
+</CardGroup>
+
+<Note>
+  "I'll just use a VPN" is the single most common reason a fresh account lands in the 0-view / 200-view jail.
+  Use a per-phone proxy instead.
+</Note>
+
+## Do I need an eSIM or a SIM card?
+
+Usually **no** — and a cheap data-only eSIM can actively hurt you. Here's the nuance:
+
+- If your phone's traffic already exits through a clean proxy in your target country, the **proxy IP** is what
+  the platform sees — not your SIM.
+- Cheap "data-only" eSIMs often roam through a carrier in a *different* country, so the device reports a
+  mismatched country code. That inconsistency is a detection signal.
+- What actually matters is **locale consistency**: your proxy's country should match the phone's timezone and
+  keyboard language. A dead physical SIM in the tray can help force the app into a region, but it isn't a
+  substitute for a clean proxy.
+
+<Tip>
+  Don't buy a random "US eSIM" expecting it to fix bans. Get a clean proxy first, and make sure the phone's
+  region, timezone, and language all line up with it.
+</Tip>
+
+## Why do I need Stash or Shadowrocket?
+
+iOS has a built-in proxy setting, but it **only routes Safari/browser traffic — not the traffic from apps**
+like TikTok or Instagram. **Stash** and **Shadowrocket** are small proxy-client apps whose whole job is to
+force *every app's* traffic through your SOCKS5 proxy. That's why they're required: without one, TikTok would
+ignore your proxy entirely and go straight out your real IP.
+
+- **Stash** — Warmr generates a QR you scan once to import the config. The smooth, one-tap path.
+- **Shadowrocket** — the popular ~$3 option. You Copy the config URL from Warmr and import it yourself
+  (Config → Add from URL). The do-it-yourself path.
+
+Both consume the exact same config; pick whichever you prefer. See [Set up proxies](/setup/proxies) for the
+step-by-step.
+
+## What actually causes a shadowban
+
+Platforms don't publish their rules, but operators consistently trace suppression to these signals:
+
+- **Datacenter or flagged IP** — a cloud/VPN IP already on the blocklist.
+- **Shared IP across accounts** — several accounts logging in from one IP in a short window.
+- **Sudden location jumps** — the same account appearing from distant countries in one session.
+- **Device fingerprint reuse** — many accounts tied to the same device signature; ban one, lose them all.
+- **Locale inconsistency** — proxy country vs. device timezone / language / SIM don't match.
+- **VPN detection** — platforms watch for the consumer-VPN connection signal.
+- **New-account rush** — heavy activity in the first 48–72 hours. (This is what [warmup](/concepts/warmup)
+  prevents.)
+
+## Glossary
+
+<AccordionGroup>
+  <Accordion title="Proxy">
+    A middleman server your phone's traffic passes through. The platform sees the proxy's IP, not yours.
+  </Accordion>
+  <Accordion title="Residential proxy">
+    Routes through a real home internet connection (a household ISP address), so it reads as a normal user.
+  </Accordion>
+  <Accordion title="Mobile / 4G / 5G proxy">
+    Routes through a real cell carrier. The highest-trust type, because mobile IPs are shared by many real
+    users (CGNAT) and can't be blocked without collateral damage.
+  </Accordion>
+  <Accordion title="Datacenter proxy">
+    Hosted on cloud servers (AWS, etc.). Cheapest and fastest, but the IP ranges are widely recognized as
+    non-human and heavily flagged. Avoid for social accounts.
+  </Accordion>
+  <Accordion title="ISP proxy (static residential)">
+    A datacenter-hosted server using an IP registered to a real ISP. Sits between residential and datacenter
+    in trust; a solid cost/quality balance for Warmr.
+  </Accordion>
+  <Accordion title="VPN">
+    Encrypts and routes **all** your device traffic through one shared (usually datacenter) exit server.
+    Detected and flagged by platforms — not a substitute for a per-account proxy.
+  </Accordion>
+  <Accordion title="SOCKS5 vs HTTP">
+    SOCKS5 carries any kind of app traffic; HTTP only carries web traffic. TikTok and Instagram apps need
+    SOCKS5 — always pick the SOCKS5 endpoint.
+  </Accordion>
+  <Accordion title="Sticky / dedicated IP vs rotating IP">
+    A sticky (dedicated) IP stays the same for days or weeks — what accounts need. A rotating IP changes
+    constantly; great for scraping, but it looks like a bot to a social platform.
+  </Accordion>
+  <Accordion title="IP reputation">
+    A history-based trust score a platform assigns to an IP. IPs previously used for spam or multi-account
+    abuse start with a bad reputation.
+  </Accordion>
+  <Accordion title="Device fingerprint">
+    The combination of ~50 hardware and software signals (model, OS, timezone, language, etc.) that identify
+    a device, separate from its IP. Two accounts sharing a fingerprint get linked.
+  </Accordion>
+  <Accordion title="eSIM">
+    A SIM provisioned digitally instead of a physical card. Fine if it's a proper voice+data plan in the
+    right country; a cheap data-only eSIM that roams abroad can report a misleading country code.
+  </Accordion>
+  <Accordion title="Shadowban (0-view / 200-view jail)">
+    A silent penalty where your reach is capped and your content is kept off the For You page. The account
+    looks normal to you, but views plateau at a handful regardless of quality. A bad IP is a leading cause.
+  </Accordion>
+</AccordionGroup>
+
+Ready to configure it? Head to [Set up proxies](/setup/proxies).
