@@ -1,0 +1,1405 @@
+openapi: 3.1.0
+info:
+  title: Warmr Cloud API
+  version: "1.2"
+  summary: Enqueue and read iPhone-fleet automation work (warmups + posts).
+  description: |
+    The business-facing REST surface for Warmr. **Bring-your-own-fleet**: API keys
+    *enqueue* work and read org-scoped state; your own connected iPhones *execute* it.
+    A server-side **airlock** prevents an API session from ever driving a device.
+
+    Auth is a two-step flow: exchange a `wk_live_` API key at the exchange endpoint for a
+    short-lived org session, then call `/v1` with `Authorization: Bearer <access_token>`.
+
+    Every `/v1` response is wrapped in an envelope `{ "schema": "1.0", ... }`; errors are
+    `{ "schema": "1.0", "error": { "code", "message", "data"? } }`. The exchange endpoint
+    uses a flatter `{ "error": "<code>" }` body.
+
+    NOTE: the public base URL is deployment-specific and is NOT asserted here. Replace the
+    `app.warmr.so` / `<project-ref>` placeholders below with your deployment's values.
+  license:
+    name: UNLICENSED
+
+servers:
+  - url: https://{origin}
+    description: Substitute your Warmr deployment origin. app.warmr.so is a placeholder.
+    variables:
+      origin:
+        default: app.warmr.so
+        description: Your Warmr deployment host, no scheme, e.g. app.example.com
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: auth
+    description: Exchange an API key for an org session.
+  - name: runs
+    description: Enqueue and read units of automation work (warm_up or post); your connected iPhones execute them.
+  - name: schedules
+    description: Standing recurring post schedules (one account each). The materializer turns them into runs.
+  - name: accounts
+    description: Register and list the social account handles in your org.
+  - name: content
+    description: Signed direct-to-storage uploads for post clips (issue → upload → confirm).
+  - name: usage
+    description: Org storage and run counts for a billing period.
+  - name: devices
+    description: The iPhones your runner(s) have reported to the org.
+  - name: webhooks
+    description: Subscribe to run.completed / run.failed events and manage deliveries. Opt-in, secret-bearing (webhooks:read / webhooks:write).
+  - name: keys
+    description: List your org's API keys — metadata only, the secret is never returned. Opt-in keys:read.
+  - name: health
+    description: Lightweight org-scoped readiness probe. Opt-in health:read.
+
+paths:
+  /functions/v1/exchange-api-key-for-session:
+    servers:
+      - url: https://{projectRef}.supabase.co
+        variables:
+          projectRef:
+            default: project-ref
+            description: Your Supabase project ref.
+    post:
+      tags: [auth]
+      summary: Exchange a wk_live_ API key for a short-lived org session.
+      operationId: exchangeApiKey
+      security: []
+      description: |
+        Send the Supabase publishable/anon key in the `apikey` header (the edge function
+        requires it). Returns an org-scoped session JWT used as the Bearer token for /v1.
+      parameters:
+        - $ref: '#/components/parameters/SupabaseApiKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExchangeRequest'
+      responses:
+        '200':
+          description: Session minted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExchangeResponse'
+        '400':
+          description: Missing/invalid JSON or missing api_key.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExchangeError' }
+        '403':
+          description: Invalid or revoked API key.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExchangeError' }
+        '429':
+          description: Rate limited (30/IP/hr or 1000/key/day).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExchangeError' }
+        '503':
+          description: Exchange backend not yet provisioned (fails closed).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ExchangeError' }
+
+  /v1/runs:
+    post:
+      tags: [runs]
+      summary: Enqueue a run (warm_up or post).
+      operationId: createRun
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateRunRequest' }
+      responses:
+        '202':
+          description: Run enqueued.
+          headers:
+            RateLimit-Limit: { $ref: '#/components/headers/RateLimit-Limit' }
+            RateLimit-Remaining: { $ref: '#/components/headers/RateLimit-Remaining' }
+            RateLimit-Reset: { $ref: '#/components/headers/RateLimit-Reset' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunEnvelope' }
+        '200':
+          description: Idempotent replay — the original run for a duplicate Idempotency-Key.
+          headers:
+            RateLimit-Limit: { $ref: '#/components/headers/RateLimit-Limit' }
+            RateLimit-Remaining: { $ref: '#/components/headers/RateLimit-Remaining' }
+            RateLimit-Reset: { $ref: '#/components/headers/RateLimit-Reset' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunEnvelope' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '413': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }  # invalid_request errors carry data.field/expected/example for a malformed Idempotency-Key or upload_id
+        '429': { $ref: '#/components/responses/Error' }  # per-org enqueue rate limit; carries Retry-After + the RateLimit-* headers
+    get:
+      tags: [runs]
+      summary: List runs in the org (RLS-scoped), newest first.
+      operationId: listRuns
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema: { $ref: '#/components/schemas/RunStatus' }
+        - name: account
+          in: query
+          required: false
+          schema: { type: string }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        '200':
+          description: A page of runs.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunListEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+
+  /v1/runs/batch:
+    post:
+      tags: [runs]
+      summary: Bulk-enqueue N posts for one account, spread over time.
+      description: >
+        Stages N explicit clips as `post` runs for a single account, with the `cadence` spread folded
+        into each run's `scheduled_at` at enqueue (one clip = one run). Each item's `upload_id` is its
+        idempotency key, so a replayed batch is a no-op; `enqueued` may be less than `requested` when
+        some uploads were already staged. Per-account/day cap returns 413. The airlock is unchanged —
+        this only enqueues; the operator's own runner drains the queue.
+      operationId: createRunBatch
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateBatchRequest' }
+      responses:
+        '202':
+          description: Batch enqueued.
+          headers:
+            RateLimit-Limit: { $ref: '#/components/headers/RateLimit-Limit' }
+            RateLimit-Remaining: { $ref: '#/components/headers/RateLimit-Remaining' }
+            RateLimit-Reset: { $ref: '#/components/headers/RateLimit-Reset' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BatchEnvelope' }
+        '200':
+          description: Idempotent replay — uploads already staged are returned, not re-enqueued.
+          headers:
+            RateLimit-Limit: { $ref: '#/components/headers/RateLimit-Limit' }
+            RateLimit-Remaining: { $ref: '#/components/headers/RateLimit-Remaining' }
+            RateLimit-Reset: { $ref: '#/components/headers/RateLimit-Reset' }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BatchEnvelope' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '413': { $ref: '#/components/responses/Error' }  # per-account/day cap; error.data = { cap, account_username, overquota_dates: [{ day, total }] }
+        '422': { $ref: '#/components/responses/Error' }
+
+  /v1/runs/{id}:
+    parameters:
+      - $ref: '#/components/parameters/RunId'
+    get:
+      tags: [runs]
+      summary: Get a single run's status.
+      operationId: getRun
+      responses:
+        '200':
+          description: The run.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+
+  /v1/runs/{id}/cancel:
+    parameters:
+      - $ref: '#/components/parameters/RunId'
+    post:
+      tags: [runs]
+      summary: Cancel a QUEUED run.
+      operationId: cancelRun
+      description: |
+        Only a queued run can be canceled via API. A claimed/running/terminal run returns
+        409 — a device owns it and the airlock blocks releasing it.
+      responses:
+        '200':
+          description: Canceled.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CancelRunEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+
+  /v1/runs/{id}/retry:
+    parameters:
+      - $ref: '#/components/parameters/RunId'
+    post:
+      tags: [runs]
+      summary: Requeue a failed/canceled run.
+      operationId: retryRun
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RetryRunRequest' }
+      responses:
+        '200':
+          description: Requeued.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RetryRunEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '409':
+          description: Not requeueable, or the source clip was already consumed.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  /v1/schedules:
+    post:
+      tags: [schedules]
+      summary: Create a standing recurring schedule for one account.
+      description: >
+        Creates a standing cadence over the account's existing content. The */5 materializer turns it into
+        queued runs (video-only) spread across the active window; the operator's own runner drains them.
+        Requires the `schedules:write` scope. account_username/device_udid must belong to the org; the
+        timezone must be a valid IANA name; the active window must be start < end.
+      operationId: createSchedule
+      responses:
+        '201':
+          description: Schedule created (status=active).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScheduleEnvelope' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }  # account/device not in the org
+        '413': { $ref: '#/components/responses/Error' }  # per-org schedule cap
+        '422': { $ref: '#/components/responses/Error' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateScheduleRequest' }
+    get:
+      tags: [schedules]
+      summary: List schedules in the org (RLS-scoped), newest first.
+      operationId: listSchedules
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema: { $ref: '#/components/schemas/ScheduleStatus' }
+        - name: account
+          in: query
+          required: false
+          schema: { type: string }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        '200':
+          description: A page of schedules.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScheduleListEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+
+  /v1/schedules/{id}:
+    parameters:
+      - $ref: '#/components/parameters/ScheduleId'
+    get:
+      tags: [schedules]
+      summary: Get a single schedule.
+      operationId: getSchedule
+      responses:
+        '200':
+          description: The schedule.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScheduleEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+    patch:
+      tags: [schedules]
+      summary: Update a schedule (partial).
+      description: >
+        Patches only name/cadence/device_udid/active_start_hour/active_end_hour/timezone/per_day_cap/
+        horizon_hours/default_disposition. account_username and status are NOT patchable here (use
+        pause/resume/delete); any other key is rejected with 422.
+      operationId: updateSchedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateScheduleRequest' }
+      responses:
+        '200':
+          description: Updated schedule.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScheduleEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [schedules]
+      summary: Soft-delete a schedule.
+      description: >
+        Sets status=deleted and cancels the schedule's future queued jobs (claimed/running complete).
+        Never a hard delete — history survives.
+      operationId: deleteSchedule
+      responses:
+        '200':
+          description: Soft-deleted.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScheduleDeleteEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+
+  /v1/schedules/{id}/pause:
+    parameters:
+      - $ref: '#/components/parameters/ScheduleId'
+    post:
+      tags: [schedules]
+      summary: Pause a schedule.
+      description: Stops materializing and cancels the schedule's future queued jobs so nothing fires after pause.
+      operationId: pauseSchedule
+      responses:
+        '200':
+          description: Paused schedule.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScheduleEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+
+  /v1/schedules/{id}/resume:
+    parameters:
+      - $ref: '#/components/parameters/ScheduleId'
+    post:
+      tags: [schedules]
+      summary: Resume a paused schedule.
+      description: Sets status back to active. Forward-only — slots canceled during pause are not back-filled.
+      operationId: resumeSchedule
+      responses:
+        '200':
+          description: Resumed schedule.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScheduleEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+
+  /v1/schedules/{id}/runs:
+    parameters:
+      - $ref: '#/components/parameters/ScheduleId'
+    get:
+      tags: [schedules]
+      summary: List the runs a schedule materialized.
+      description: Returns the runner_jobs stamped with this schedule_id. Requires the `runs:read` scope.
+      operationId: listScheduleRuns
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema: { $ref: '#/components/schemas/RunStatus' }
+        - name: limit
+          in: query
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+      responses:
+        '200':
+          description: A page of runs for this schedule.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunListEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+
+  /v1/accounts:
+    get:
+      tags: [accounts]
+      summary: List the org's social accounts.
+      operationId: listAccounts
+      responses:
+        '200':
+          description: Accounts.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AccountListEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [accounts]
+      summary: Register a social account handle in the org.
+      operationId: createAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateAccountRequest' }
+      responses:
+        '201':
+          description: Account created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AccountEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+
+  /v1/content/uploads:
+    post:
+      tags: [content]
+      summary: Issue a signed direct-to-storage upload URL.
+      operationId: createUpload
+      description: |
+        Returns a bucket/path/token. Upload the bytes with the Supabase storage client's
+        uploadToSignedUrl(path, token, file), then call /v1/content/uploads/confirm.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateUploadRequest' }
+      responses:
+        '201':
+          description: Signed upload issued.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CreateUploadEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+        '500': { $ref: '#/components/responses/Error' }
+
+  /v1/content/uploads/confirm:
+    post:
+      tags: [content]
+      summary: Register a completed upload.
+      operationId: confirmUpload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ConfirmUploadRequest' }
+      responses:
+        '200':
+          description: Upload synced.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConfirmUploadEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+
+  /v1/usage:
+    get:
+      tags: [usage]
+      summary: Org storage + run counts for a period.
+      operationId: getUsage
+      parameters:
+        - name: period
+          in: query
+          required: false
+          description: YYYY-MM; defaults to the current month.
+          schema: { type: string, pattern: '^\d{4}-\d{2}$' }
+      responses:
+        '200':
+          description: Usage.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UsageEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+
+  /v1/devices:
+    get:
+      tags: [devices]
+      summary: Devices the org's runner(s) reported.
+      operationId: listDevices
+      responses:
+        '200':
+          description: Devices.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DeviceListEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+
+  /v1/keys:
+    get:
+      tags: [keys]
+      summary: List the org's API keys (metadata only — never the secret).
+      operationId: listKeys
+      parameters:
+        - name: include_revoked
+          in: query
+          required: false
+          description: Include revoked keys (default false — active only).
+          schema: { type: boolean, default: false }
+      responses:
+        '200':
+          description: API keys (newest first). The secret (key_hash) is never returned.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ApiKeyListEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+
+  /v1/webhooks:
+    get:
+      tags: [webhooks]
+      summary: List the org's webhooks (never the signing secret). Requires webhooks:read.
+      operationId: listWebhooks
+      responses:
+        '200':
+          description: Webhooks (newest first).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WebhookListEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [webhooks]
+      summary: Register a webhook endpoint. Requires webhooks:write.
+      operationId: createWebhook
+      description: |
+        The 201 body carries the HMAC signing `secret` — returned ONLY in this response,
+        once, at creation (the column is unreadable to clients afterwards; GET/PATCH can
+        never return it again). Store it immediately.
+
+        The URL must be a public https:// endpoint (an SSRF guard rejects localhost/
+        private/internal hosts with 422). Omit `events` to subscribe to ALL events; an
+        EXPLICIT `events: []` is rejected with 422 (the empty set means "all", which
+        makes an empty list ambiguous intent).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateWebhookRequest' }
+      responses:
+        '201':
+          description: Webhook created. The `secret` in this body is shown exactly once.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WebhookWithSecretEnvelope' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }  # non-https/unsafe url, non-string events, or events:[]
+
+  /v1/webhooks/{id}:
+    parameters:
+      - $ref: '#/components/parameters/WebhookId'
+    patch:
+      tags: [webhooks]
+      summary: Update a webhook (partial). Requires webhooks:write.
+      operationId: updateWebhook
+      description: |
+        Patches any of url / events / active; at least one must be supplied (422 otherwise).
+        A new url is re-checked by the SSRF guard. `events: []` is rejected with 422 —
+        it would silently WIDEN the subscription to ALL events; to quiet a webhook set
+        `active: false` instead. Never returns the signing secret.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateWebhookRequest' }
+      responses:
+        '200':
+          description: The updated webhook (never the secret).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WebhookEnvelope' }
+        '400': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }  # empty patch, non-https url, or events:[]
+    delete:
+      tags: [webhooks]
+      summary: Delete a webhook (hard delete). Requires webhooks:write.
+      operationId: deleteWebhook
+      description: >
+        Hard-deletes the webhook; its delivery history cascades and the signing secret
+        dies with the row. There is no soft-delete/undo.
+      responses:
+        '200':
+          description: Deleted.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WebhookDeleteEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+
+  /v1/webhooks/{id}/test:
+    parameters:
+      - $ref: '#/components/parameters/WebhookId'
+    post:
+      tags: [webhooks]
+      summary: Enqueue a signed webhook.ping test delivery. Requires webhooks:write.
+      operationId: testWebhook
+      description: >
+        Enqueues a signed `webhook.ping` event for this webhook and returns 202 with the
+        delivery id. Delivery is asynchronous — 202 means enqueued, not delivered; follow
+        the attempt at GET /v1/webhooks/{id}/deliveries.
+      responses:
+        '202':
+          description: Test delivery enqueued (not yet delivered).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WebhookTestEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+
+  /v1/webhooks/{id}/deliveries:
+    get:
+      tags: [webhooks]
+      summary: Delivery attempts for one webhook (never the raw body). Requires webhooks:read.
+      operationId: listWebhookDeliveries
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: status, in: query, required: false, schema: { type: string, enum: [pending, delivered, dead] } }
+        - { name: limit, in: query, required: false, schema: { type: integer, default: 50, maximum: 200 } }
+      responses:
+        '200':
+          description: Delivery attempts (newest first).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/WebhookDeliveryListEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+
+  /v1/webhooks/deliveries/{id}/redrive:
+    post:
+      tags: [webhooks]
+      summary: Re-queue a dead-lettered delivery for re-delivery. Requires webhooks:write.
+      operationId: redriveWebhookDelivery
+      parameters:
+        - { name: id, in: path, required: true, description: The delivery id (bigint)., schema: { type: integer } }
+      responses:
+        '200':
+          description: The delivery, reset to pending.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RedriveEnvelope' }
+        '409': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+        '401': { $ref: '#/components/responses/Error' }
+
+  /v1/health:
+    get:
+      tags: [health]
+      summary: Single-pane org health (fleet, queue, webhooks, scheduler). Requires health:read.
+      operationId: getOrgHealth
+      responses:
+        '200':
+          description: Org health snapshot.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HealthEnvelope' }
+        '401': { $ref: '#/components/responses/Error' }
+
+webhooks:
+  warmrEvent:
+    post:
+      summary: A Warmr event delivered to your configured endpoint.
+      description: |
+        Warmr POSTs a signed JSON body to your URL. Verify with
+        `X-Warmr-Signature: sha256=<hmac-sha256(rawBody, secret)>`. Delivery is
+        at-least-once; dedupe on `X-Warmr-Event-Id`. Retries: up to 5 attempts over 72h.
+
+        Compute the HMAC over the RAW request body (not a re-serialized object) using the signing
+        secret returned once when you created the webhook, then compare in constant time:
+
+        ```js
+        import crypto from "node:crypto";
+        // The SDK ships this as verifyWebhookSignature(rawBody, header, secret).
+        function verify(rawBody, header, secret) {
+          const expected = "sha256=" + crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
+          const a = Buffer.from(header ?? ""), b = Buffer.from(expected);
+          return a.length === b.length && crypto.timingSafeEqual(a, b);
+        }
+        ```
+      parameters:
+        - name: X-Warmr-Event
+          in: header
+          schema: { type: string }
+        - name: X-Warmr-Event-Id
+          in: header
+          schema: { type: string }
+        - name: X-Warmr-Signature
+          in: header
+          required: true
+          schema: { type: string, pattern: '^sha256=[0-9a-f]{64}$' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/WebhookEvent' }
+      responses:
+        '2XX':
+          description: Acknowledge receipt (any 2xx marks the delivery delivered).
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: The access_token from the exchange endpoint.
+
+  parameters:
+    RunId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+    ScheduleId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+    WebhookId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Dedupes a `post` run; a duplicate key returns the original run (200).
+      schema: { type: string }
+    SupabaseApiKeyHeader:
+      name: apikey
+      in: header
+      required: true
+      description: The Supabase publishable/anon key (required by the edge function).
+      schema: { type: string }
+
+  headers:
+    RateLimit-Limit:
+      description: Per-org enqueue cap for the fixed window (advisory; draft RFC 9331 style).
+      schema: { type: integer }
+    RateLimit-Remaining:
+      description: Approximate enqueues left in the current window at check time (clamped to >= 0).
+      schema: { type: integer }
+    RateLimit-Reset:
+      description: Seconds until the enqueue window resets.
+      schema: { type: integer }
+
+  responses:
+    Error:
+      description: A /v1 error envelope.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  schemas:
+    # ---- exchange ----
+    ExchangeRequest:
+      type: object
+      required: [api_key]
+      properties:
+        api_key:
+          type: string
+          pattern: '^wk_(live|test)_[A-Za-z0-9]{16,}$'
+    ExchangeResponse:
+      type: object
+      required: [access_token, refresh_token, expires_at, org_id, supabase_url, anon_key]
+      properties:
+        access_token: { type: string }
+        refresh_token: { type: string }
+        expires_at:
+          type: integer
+          description: UNIX epoch SECONDS at which access_token expires.
+        org_id: { type: string }
+        supabase_url: { type: string, format: uri }
+        anon_key: { type: string }
+    ExchangeError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: A flat error code (e.g. invalid_api_key, rate_limited).
+
+    # ---- envelope ----
+    Envelope:
+      type: object
+      required: [schema]
+      properties:
+        schema: { type: string, const: "1.0" }
+    ErrorEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [error]
+          properties:
+            error:
+              type: object
+              required: [code, message]
+              properties:
+                code: { type: string }
+                message: { type: string }
+                # Optional, code-specific detail. Examples:
+                #   invalid_request (malformed Idempotency-Key / upload_id): { field, expected: "uuid", example }
+                #   quota_exceeded (batch per-account/day cap): { cap, account_username, overquota_dates: [{ day, total }] }
+                data: {}
+
+    # ---- runs ----
+    RunStatus:
+      type: string
+      description: Public run lifecycle. Forward-compatible (unknown values may appear).
+      enum: [queued, claimed, running, succeeded, failed, canceled]
+    Run:
+      type: object
+      required: [run_id, status, type]
+      properties:
+        run_id: { type: string }
+        status: { $ref: '#/components/schemas/RunStatus' }
+        type: { type: string, description: "job_type (e.g. warm_up, post)." }
+        account_username: { type: [string, "null"] }
+        device_udid: { type: [string, "null"] }
+        upload_id: { type: [string, "null"], description: drop_upload_id (set for posts). }
+        disposition: { type: [string, "null"] }
+        scheduled_at: { type: [string, "null"], format: date-time }
+        created_at: { type: [string, "null"], format: date-time }
+        updated_at: { type: [string, "null"], format: date-time }
+        error: { type: [string, "null"], description: "error_message, or null." }
+    CreateRunInput:
+      type: object
+      properties:
+        upload_id: { type: string, description: Required for a post. }
+        disposition: { type: string, default: post_now }
+        caption: { type: string }
+    CreateRunRequest:
+      type: object
+      required: [type, account_username]
+      properties:
+        type: { type: string, enum: [warm_up, post] }
+        account_username: { type: string, minLength: 1 }
+        device_udid: { type: string }
+        input: { $ref: '#/components/schemas/CreateRunInput' }
+        scheduled_at: { type: string, format: date-time }
+    RetryRunRequest:
+      type: object
+      properties:
+        reschedule_now: { type: boolean, default: false }
+    RunEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [run]
+          properties:
+            run: { $ref: '#/components/schemas/Run' }
+    RunListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [runs]
+          properties:
+            runs:
+              type: array
+              items: { $ref: '#/components/schemas/Run' }
+    BatchCadence:
+      type: object
+      description: Spread for a batch. "now" = immediate; "custom" repeats every intervalHours.
+      required: [kind]
+      properties:
+        kind: { type: string, enum: [now, daily, thrice, custom] }
+        intervalHours: { type: integer, minimum: 1, description: Required for kind=custom. }
+    BatchItem:
+      type: object
+      required: [upload_id]
+      properties:
+        upload_id: { type: string, description: The clip; also the per-row idempotency / post-once key. }
+        caption: { type: string }
+        disposition: { type: string, enum: [draft, post_now], description: Overrides the batch default. }
+    CreateBatchRequest:
+      type: object
+      required: [account_username, items]
+      properties:
+        type: { type: string, enum: [post], default: post }
+        account_username: { type: string, minLength: 1 }
+        device_udid: { type: string }
+        cadence: { $ref: '#/components/schemas/BatchCadence' }
+        start_at: { type: string, format: date-time, description: Spread anchor; defaults to now. }
+        disposition: { type: string, enum: [draft, post_now], default: post_now, description: Batch-level default. }
+        items:
+          type: array
+          minItems: 1
+          maxItems: 200
+          items: { $ref: '#/components/schemas/BatchItem' }
+    BatchResult:
+      type: object
+      properties:
+        account_username: { type: string }
+        type: { type: string }
+        requested: { type: integer }
+        enqueued: { type: integer, description: May be < requested when some uploads were already staged. }
+        first_at: { type: [string, "null"], format: date-time }
+        last_at: { type: [string, "null"], format: date-time }
+    BatchEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [batch, runs]
+          properties:
+            batch: { $ref: '#/components/schemas/BatchResult' }
+            runs:
+              type: array
+              items: { $ref: '#/components/schemas/Run' }
+    CancelRunEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [run_id, status]
+          properties:
+            run_id: { type: string }
+            status: { type: string, const: canceled }
+            result: {}
+    RetryRunEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [run_id, status]
+          properties:
+            run_id: { type: string }
+            status: { type: string, const: queued }
+            result: {}
+
+    # ---- schedules ----
+    Cadence:
+      description: Recurrence for a standing schedule. Off, or N posts/day across the active window.
+      oneOf:
+        - type: object
+          required: [kind]
+          properties:
+            kind: { type: string, const: "off" }
+        - type: object
+          required: [kind, count]
+          properties:
+            kind: { type: string, const: perDay }
+            count: { type: integer, minimum: 1, maximum: 12 }
+    ScheduleStatus:
+      type: string
+      description: Schedule lifecycle. Forward-compatible (unknown values may appear).
+      enum: [active, paused, exhausted, deleted]
+    Schedule:
+      type: object
+      required: [schedule_id, name, account_username, cadence, status]
+      properties:
+        schedule_id: { type: string }
+        name: { type: string }
+        account_username: { type: string }
+        device_udid: { type: [string, "null"] }
+        cadence: { $ref: '#/components/schemas/Cadence' }
+        active_start_hour: { type: integer }
+        active_end_hour: { type: integer }
+        timezone: { type: string, description: IANA name the materializer slots in. }
+        content_source: { description: jsonb (selector/reuse/on_exhaustion). }
+        default_disposition: { type: string, enum: [draft, post_now] }
+        per_day_cap: { type: integer }
+        horizon_hours: { type: integer }
+        status: { $ref: '#/components/schemas/ScheduleStatus' }
+        last_materialized_through: { type: [string, "null"], format: date-time }
+        created_at: { type: [string, "null"], format: date-time }
+        updated_at: { type: [string, "null"], format: date-time }
+    CreateScheduleRequest:
+      type: object
+      required: [name, account_username]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 120 }
+        account_username: { type: string, minLength: 1 }
+        cadence: { $ref: '#/components/schemas/Cadence' }
+        device_udid: { type: string }
+        active_start_hour: { type: integer, minimum: 0, maximum: 23, default: 9 }
+        active_end_hour: { type: integer, minimum: 1, maximum: 24, default: 21 }
+        timezone: { type: string, default: UTC }
+        per_day_cap: { type: integer, minimum: 1, maximum: 12, default: 6 }
+        horizon_hours: { type: integer, minimum: 1, maximum: 72, default: 48 }
+        default_disposition: { type: string, enum: [draft, post_now], default: draft }
+    UpdateScheduleRequest:
+      type: object
+      description: >
+        Partial patch. account_username and status are not updatable here; any key outside this set is rejected.
+      properties:
+        name: { type: string, minLength: 1, maxLength: 120 }
+        cadence: { $ref: '#/components/schemas/Cadence' }
+        device_udid: { type: [string, "null"] }
+        active_start_hour: { type: integer, minimum: 0, maximum: 23 }
+        active_end_hour: { type: integer, minimum: 1, maximum: 24 }
+        timezone: { type: string }
+        per_day_cap: { type: integer, minimum: 1, maximum: 12 }
+        horizon_hours: { type: integer, minimum: 1, maximum: 72 }
+        default_disposition: { type: string, enum: [draft, post_now] }
+    ScheduleEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [schedule]
+          properties:
+            schedule: { $ref: '#/components/schemas/Schedule' }
+    ScheduleListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [schedules]
+          properties:
+            schedules:
+              type: array
+              items: { $ref: '#/components/schemas/Schedule' }
+    ScheduleDeleteEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [schedule_id, status]
+          properties:
+            schedule_id: { type: string }
+            status: { type: string, const: deleted }
+
+    # ---- accounts ----
+    Account:
+      type: object
+      required: [id, platform, username]
+      properties:
+        id: { type: string }
+        platform: { type: string }
+        username: { type: string }
+        device_udid: { type: [string, "null"] }
+        created_at: { type: [string, "null"], format: date-time }
+    CreateAccountRequest:
+      type: object
+      required: [platform, username]
+      properties:
+        platform:
+          type: string
+          enum: [tiktok, instagram, x, reddit, linkedin]
+        username:
+          type: string
+          pattern: '^[A-Za-z0-9._-]{1,64}$'
+          description: A leading @ is stripped server-side.
+    AccountEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [account]
+          properties:
+            account: { $ref: '#/components/schemas/Account' }
+    AccountListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [accounts]
+          properties:
+            accounts:
+              type: array
+              items: { $ref: '#/components/schemas/Account' }
+
+    # ---- content uploads ----
+    CreateUploadRequest:
+      type: object
+      required: [account_username, filename]
+      properties:
+        account_username: { type: string }
+        filename: { type: string, description: Filename only (no path separators). }
+    CreateUploadEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [upload_id, account_username, filename, bucket, path, token]
+          properties:
+            upload_id: { type: string }
+            account_username: { type: string }
+            filename: { type: string }
+            bucket: { type: string }
+            path: { type: string }
+            token: { type: string }
+    ConfirmUploadRequest:
+      type: object
+      required: [upload_id, account_username, filename, size_bytes]
+      properties:
+        upload_id: { type: string, format: uuid }
+        account_username: { type: string }
+        filename: { type: string }
+        size_bytes: { type: integer, minimum: 1 }
+        checksum_sha256:
+          type: [string, "null"]
+          pattern: '^[0-9a-f]{64}$'
+        storage_path: { type: string }
+    ConfirmUploadEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [upload_id, status]
+          properties:
+            upload_id: { type: string }
+            status: { type: string, const: synced }
+
+    # ---- usage ----
+    UsageEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [period, storage, runs]
+          properties:
+            period: { type: string }
+            storage:
+              type: object
+              required: [used_bytes]
+              properties:
+                used_bytes: { type: integer }
+            runs:
+              type: object
+              additionalProperties: { type: integer }
+              description: Map of "<job_type>:<public_status>" -> count.
+
+    # ---- devices ----
+    Device:
+      type: object
+      required: [udid, present]
+      properties:
+        udid: { type: string }
+        mac_fingerprint: { type: [string, "null"] }
+        name: { type: [string, "null"] }
+        last_seen: { type: [string, "null"], format: date-time }
+        present:
+          type: boolean
+          description: True when last_seen is within the last 60 seconds.
+    DeviceListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [devices]
+          properties:
+            devices:
+              type: array
+              items: { $ref: '#/components/schemas/Device' }
+
+    # ---- keys ----
+    ApiKey:
+      type: object
+      required: [id, prefix, active, created_at]
+      properties:
+        id: { type: string }
+        project_id: { type: [string, "null"] }
+        prefix:
+          type: string
+          description: Short display prefix (e.g. wk_live_a1b2). NOT the secret.
+        scopes:
+          type: array
+          items: { type: string }
+        created_by: { type: [string, "null"] }
+        last_used_at: { type: [string, "null"], format: date-time }
+        revoked_at: { type: [string, "null"], format: date-time }
+        active:
+          type: boolean
+          description: True when revoked_at is null.
+        created_at: { type: string, format: date-time }
+    ApiKeyListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [keys]
+          properties:
+            keys:
+              type: array
+              items: { $ref: '#/components/schemas/ApiKey' }
+
+    Webhook:
+      type: object
+      properties:
+        webhook_id: { type: string }
+        url: { type: string }
+        events: { type: array, items: { type: string } }
+        active: { type: boolean }
+        created_at: { type: string }
+        updated_at: { type: string }
+    WebhookListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [webhooks]
+          properties:
+            webhooks: { type: array, items: { $ref: '#/components/schemas/Webhook' } }
+    CreateWebhookRequest:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+          format: uri
+          description: A public https:// URL (SSRF guard rejects localhost/private/internal hosts).
+        events:
+          type: array
+          minItems: 1
+          items: { type: string }
+          description: >
+            Event types to deliver (e.g. run.completed). OMIT to subscribe to ALL events;
+            an explicit empty array is rejected with 422 (the empty set means "all",
+            making [] ambiguous intent).
+    UpdateWebhookRequest:
+      type: object
+      description: >
+        Partial patch — supply at least one of url/events/active (422 otherwise).
+        events:[] is rejected with 422 (it would widen to ALL events); set active:false
+        to quiet a webhook instead.
+      properties:
+        url: { type: string, format: uri, description: "A public https:// URL (re-checked by the SSRF guard)." }
+        events:
+          type: array
+          minItems: 1
+          items: { type: string }
+        active: { type: boolean }
+    WebhookWithSecret:
+      type: object
+      description: >
+        The create projection — the webhook plus its one-time signing secret. Carries NO
+        created_at/updated_at (the create RPC does not return them; GET the webhook for
+        timestamps).
+      required: [webhook_id, url, events, active, secret]
+      properties:
+        webhook_id: { type: string }
+        url: { type: string }
+        events: { type: array, items: { type: string } }
+        active: { type: boolean }
+        secret:
+          type: string
+          description: >
+            The HMAC-SHA256 signing secret. Returned ONLY in the 201 create response —
+            no later call can retrieve it. Store it immediately.
+    WebhookEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [webhook]
+          properties:
+            webhook: { $ref: '#/components/schemas/Webhook' }
+    WebhookWithSecretEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [webhook]
+          properties:
+            webhook: { $ref: '#/components/schemas/WebhookWithSecret' }
+    WebhookDeleteEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [webhook_id, deleted]
+          properties:
+            webhook_id: { type: string }
+            deleted: { type: boolean, const: true }
+    WebhookTestEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [delivery_id]
+          properties:
+            delivery_id:
+              type: [integer, "null"]
+              description: Follow the attempt at GET /v1/webhooks/{id}/deliveries.
+    WebhookDelivery:
+      type: object
+      properties:
+        delivery_id: { type: integer }
+        webhook_id: { type: string }
+        event_id: { type: string }
+        event_type: { type: string }
+        status: { type: string, enum: [pending, delivered, dead] }
+        attempt_count: { type: integer }
+        next_attempt_at: { type: [string, "null"] }
+        first_attempt_at: { type: [string, "null"] }
+        last_attempt_at: { type: [string, "null"] }
+        last_error: { type: [string, "null"] }
+        created_at: { type: string }
+    WebhookDeliveryListEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [deliveries]
+          properties:
+            deliveries: { type: array, items: { $ref: '#/components/schemas/WebhookDelivery' } }
+    RedriveEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [delivery]
+          properties:
+            delivery:
+              type: object
+              properties:
+                delivery_id: { type: integer }
+                status: { type: string }
+                next_attempt_at: { type: [string, "null"] }
+    OrgHealth:
+      type: object
+      properties:
+        org_id: { type: string }
+        fleet:
+          type: object
+          properties:
+            devices_online: { type: integer }
+            devices_total: { type: integer }
+            last_heartbeat: { type: [string, "null"] }
+        queue:
+          type: object
+          properties:
+            queued: { type: integer }
+            claimed: { type: integer }
+            running: { type: integer }
+        webhooks:
+          type: object
+          properties:
+            pending: { type: integer }
+            dead_lettered: { type: integer }
+            pump_last_run_at: { type: [string, "null"] }
+            pump_last_ok: { type: [boolean, "null"] }
+        scheduler:
+          type: object
+          properties:
+            active_schedules: { type: integer }
+            last_materialized_through: { type: [string, "null"] }
+    HealthEnvelope:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+        - type: object
+          required: [health]
+          properties:
+            health: { $ref: '#/components/schemas/OrgHealth' }
+
+    # ---- webhooks ----
+    WebhookEventType:
+      type: string
+      enum: [run.completed, run.failed, webhook.ping]
+    WebhookEvent:
+      type: object
+      required: [event_id, type, org_id, created_at, data]
+      properties:
+        event_id: { type: string }
+        type: { $ref: '#/components/schemas/WebhookEventType' }
+        org_id: { type: string }
+        created_at: { type: string, format: date-time }
+        data:
+          description: Event-specific payload.

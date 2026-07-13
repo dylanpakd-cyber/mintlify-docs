@@ -1,0 +1,97 @@
+---
+title: Getting started
+description: Confirm your org is on Scale, mint a wk_live_ key with the right scopes, set the three deployment values, and make your first call. Includes the limits and quota table.
+---
+
+# Getting started
+
+Status: Current (Scale plan).
+
+This is the shortest path from "I'm on Scale" to a working `/v1` call. The [SDK quickstart](/developers/sdk-quickstart) is the code walkthrough; this page is the access, keys, and limits page.
+
+## 1. Confirm you're on the Scale plan
+
+The Warmr Cloud API is a **Scale-plan** feature. There is nothing to toggle on — being on an active Scale plan *is* the entitlement. The gate is enforced when your key is exchanged for a session: if the org behind the key is not on active Scale, the exchange returns **`403 scale_plan_required`** and `/v1` stays unreachable. See [Authentication](/developers/authentication#the-exchange).
+
+<Note>
+This is the live, authoritative gate on **every** API session — including a key that was minted on Scale and later downgraded. Keep the org on Scale for as long as you call the API.
+</Note>
+
+## 2. Mint a key and choose its scopes
+
+Mint a `wk_live_…` key in the **Developers** tab of the Warmr app (or the web cockpit at `app.warmr.so`). Minting is a **dashboard-only** action an org **owner or operator** performs — an API session can never mint or revoke keys, so a leaked key can't escalate itself into more keys. You see the raw key **once**; store it in a secret manager.
+
+Pick the [scopes](/developers/scopes) the key needs **at mint time** — a key never gains a scope it wasn't minted with:
+
+- **9 default scopes** cover runs, accounts, uploads, schedules, usage, and devices — enough to register an account, enqueue runs, and post clips.
+- **4 opt-in scopes** (`webhooks:read` / `webhooks:write`, `health:read`, `keys:read`) are secret-bearing and must be requested explicitly.
+
+## 3. Set the three deployment values
+
+Every caller needs three **deployment-specific** values — there is no canonical public URL baked in:
+
+| Value | What it is |
+|---|---|
+| `baseUrl` | Your Warmr deployment's `/v1` origin. |
+| `exchangeUrl` | The Supabase edge function that trades your key for a session. |
+| `publishableKey` | Your Supabase publishable/anon key, sent in the exchange's `apikey` header. |
+
+<Note>
+`https://app.warmr.so` appears throughout these docs only as a **placeholder** — substitute your own deployment origin. Get these three wrong and the first call throws a `WarmrAuthError`.
+</Note>
+
+## 4. Make your first call
+
+With the [SDK](/developers/sdk-quickstart), the key → session exchange (and its caching and refresh) is handled for you:
+
+```ts
+import { WarmrClient } from "@warmr/sdk";
+
+const warmr = new WarmrClient({
+  apiKey: process.env.WARMR_API_KEY!,                 // "wk_live_…"
+  baseUrl: "https://app.warmr.so",                     // YOUR deployment origin
+  exchangeUrl: "https://<ref>.supabase.co/functions/v1/exchange-api-key-for-session",
+  publishableKey: process.env.SUPABASE_PUBLISHABLE_KEY!,
+});
+
+// Register a handle once (no credentials or proxies — those stay on your Mac).
+await warmr.accounts.create({ platform: "tiktok", username: "myhandle" });
+
+// Enqueue a warmup — your connected iPhone picks it up.
+const run = await warmr.runs.create({ type: "warm_up", account_username: "myhandle" });
+console.log(run.run_id, run.status); // e.g. "…", "queued"
+```
+
+To **post a clip**, follow the three-step upload flow ([Content uploads](/developers/content)) to get an `upload_id`, then enqueue a `post` run with it ([Runs](/developers/runs)). Prefer raw HTTP? The exchange and Bearer flow are in [Authentication](/developers/authentication).
+
+## 5. Limits and quotas
+
+These caps are **uniform across API callers** — Scale grants API *access*, not higher caps.
+
+| Limit | Value | Applies to |
+|---|---|---|
+| Exchange, per IP | 30 / hour | Best-effort, keyed on `x-forwarded-for`. |
+| Exchange, per key | 1000 / day | The **binding** limit, keyed on the key hash. |
+| Enqueue | 120 runs / minute / org | `POST /v1/runs` and `POST /v1/runs/batch`; over the cap returns `429` with `Retry-After` + `RateLimit-*` headers. |
+| Batch size | 1–200 items / call | `POST /v1/runs/batch`. |
+| Schedule per-day cap | 1–12, default 6 | Per `POST /v1/schedules` (`horizon_hours` 1–72, default 48). |
+| Plan quota | `413 quota_exceeded` | Posts/runs against the org's monthly plan quota. |
+
+Because a session token is reused until it nears expiry (the SDK caches and re-exchanges automatically), normal usage rarely approaches the exchange limits. Pace enqueues client-side off the `RateLimit-*` headers.
+
+## What the API can't do (the airlock)
+
+An API session **enqueues and reads** — it never drives a device. A server-side airlock enforces this:
+
+- It **cannot claim a device or release a run a device already owns** — acting on a claimed/running run returns `403 forbidden` or `409 conflict`.
+- It **cannot set the target app** over `/v1` — the platform comes from your org's account roster at dispatch, never from the caller.
+- It **cannot mint or revoke keys** — that is dashboard-only.
+- It **cannot pass credentials or proxies** — those secrets stay on your Mac (bring-your-own-fleet).
+- It **cannot provision devices** from the cloud — your own connected iPhones execute the work.
+
+## Next
+
+- [Authentication](/developers/authentication) — the exchange, token caching, and rate limits in detail.
+- [Scopes](/developers/scopes) — the full scope list and what each endpoint requires.
+- [SDK quickstart](/developers/sdk-quickstart) — install `@warmr/sdk` and walk the full posting flow.
+- [Runs](/developers/runs) — enqueue, batch, list, cancel, retry.

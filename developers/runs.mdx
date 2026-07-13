@@ -1,0 +1,113 @@
+---
+title: Runs
+description: The runs resource — enqueue a warm_up or post, bulk-enqueue a batch, list, get, cancel, and retry, with idempotency-key support and the full Run object.
+---
+
+# Runs
+
+Status: Current (Scale plan).
+
+A **run** is one unit of automation work — a `warm_up` or a `post` — that your own connected iPhone picks up and executes. The API enqueues and reads; the [airlock](/developers/overview#the-bring-your-own-fleet--airlock-model) keeps the API session off the device itself.
+
+All paths are relative to `<baseUrl>/v1` and require `Authorization: Bearer`. Reads need [`runs:read`](/developers/scopes); writes need `runs:write`.
+
+## Endpoints
+
+| Endpoint | SDK method | Scope |
+|---|---|---|
+| `POST /v1/runs` | `runs.create(req, { idempotencyKey? })` | `runs:write` |
+| `POST /v1/runs/batch` | `runs.createBatch(req, { idempotencyKey? })` | `runs:write` |
+| `GET /v1/runs` | `runs.list({ status?, account?, limit? })` | `runs:read` |
+| `GET /v1/runs/{id}` | `runs.get(id)` | `runs:read` |
+| `POST /v1/runs/{id}/cancel` | `runs.cancel(id)` | `runs:write` |
+| `POST /v1/runs/{id}/retry` | `runs.retry(id, { reschedule_now? })` | `runs:write` |
+
+## Enqueue a run — `POST /v1/runs`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `type` | `"warm_up"` \| `"post"` | yes | `carousel_post` is not yet accepted (`422`). |
+| `account_username` | string | yes | Non-empty; must be an account you registered. |
+| `device_udid` | string | no | Pin to a specific device. Must be a device your org already knows (presence, accounts, or prior jobs), else `422 unknown_device`. List valid UDIDs with `GET /v1/devices`. |
+| `input` | object | for `post` | A `post` requires `input.upload_id`. |
+| `input.upload_id` | string | for `post` | From `POST /v1/content/uploads`. |
+| `input.disposition` | string | no | Defaults to `"post_now"`. |
+| `input.caption` | string | no | Stored as the post caption. |
+| `scheduled_at` | ISO-8601 string | no | Schedule for later. |
+
+Returns `202` with `{ "run": Run }`.
+
+### Idempotency
+
+Send an `Idempotency-Key` header (recommended for a `post`): a duplicate key returns the original run (`200`) instead of creating a second post. **The key must be a UUID** — any other format is rejected up front with `422 invalid_request`.
+
+```ts
+const run = await warmr.runs.create({
+  type: "warm_up",
+  account_username: "myhandle",
+});
+```
+
+### Target app resolution
+
+The platform a run executes against is derived from your **org's account roster at dispatch** — the runner looks up `account_username` and resolves the target app from that account's platform. TikTok and Instagram accounts always resolve; **X accounts** additionally need the operator to set the target app in Warmr's Settings on the Mac before runs execute. The target app is deliberately **not settable over `/v1`** — the platform comes from the roster, never from the API caller.
+
+## Bulk-enqueue — `POST /v1/runs/batch`
+
+Stages N explicit clips as `post` runs for a **single account**, spreading them over time per `cadence` (each `scheduled_at` is folded in at enqueue — one clip becomes one run). Each item's `upload_id` is its per-row idempotency key, so a **replayed batch is a no-op**; `enqueued` may be less than `requested` when some uploads were already staged. The per-account/day cap returns `413`. The airlock is unchanged — this only enqueues.
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `account_username` | string | yes | The one account for the whole batch. |
+| `items` | array | yes | 1–200 items; each `{ upload_id, caption?, disposition? }`. |
+| `type` | `"post"` | no | Defaults to `post`. |
+| `device_udid` | string | no | Pin to an org device. |
+| `cadence` | object | no | `{ "kind": "now" \| "daily" \| "thrice" \| "custom", "intervalHours"? }`. `intervalHours` is required for `kind=custom`. |
+| `start_at` | ISO-8601 string | no | Spread anchor; defaults to now. |
+| `disposition` | `"draft"` \| `"post_now"` | no | Batch-level default (`post_now`); a per-item `disposition` overrides. |
+
+Returns `202` (`200` on an idempotent replay) with `{ "batch": BatchResult, "runs": Run[] }`. `BatchResult` = `{ account_username, type, requested, enqueued, first_at, last_at }`.
+
+## List runs — `GET /v1/runs`
+
+Query: `status` (public status), `account` (exact `account_username`), `limit` (1–200, default 50). Returns `{ "runs": Run[] }`, newest first, org-scoped by RLS.
+
+## Get a run — `GET /v1/runs/{id}`
+
+Returns `{ "run": Run }`, or `404 not_found`.
+
+## Cancel a run — `POST /v1/runs/{id}/cancel`
+
+Only a **queued** run can be canceled via the API. A claimed / running / terminal run returns `409 conflict` — a device owns it, and the airlock blocks releasing it. Returns `{ "run_id", "status": "canceled", "result" }`.
+
+## Retry a run — `POST /v1/runs/{id}/retry`
+
+Requeue a **failed or canceled** run. Body: `{ "reschedule_now": boolean }` (optional). Returns `{ "run_id", "status": "queued", "result" }`. If the post's clip already went out, returns `409 source_consumed`; if the run is not in a requeueable state, `409 conflict`.
+
+## The Run object
+
+```jsonc
+{
+  "run_id": "…",
+  "status": "queued",        // queued | claimed | running | succeeded | failed | canceled
+  "type": "warm_up",         // warm_up | post
+  "account_username": "…",
+  "device_udid": null,
+  "upload_id": null,          // set for posts
+  "disposition": null,
+  "scheduled_at": null,
+  "created_at": "…",
+  "updated_at": "…",
+  "error": null               // error message, or null
+}
+```
+
+<Note>
+Status mapping: internally `done` is surfaced as `succeeded`; every other state (`queued` / `claimed` / `running` / `failed` / `canceled`) passes through unchanged.
+</Note>
+
+## Next
+
+- [Schedules](/developers/schedules) — standing recurring cadences instead of one-off runs.
+- [Webhooks](/developers/webhooks) — get notified on `run.completed` / `run.failed`.
+- [SDK quickstart](/developers/sdk-quickstart) — the posting flow that produces an `upload_id`.

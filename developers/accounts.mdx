@@ -1,0 +1,62 @@
+---
+title: Accounts
+description: Register and list the social account handles in your org. Credentials and proxies stay on your Mac — bring-your-own-fleet.
+---
+
+# Accounts
+
+Status: Current (Scale plan).
+
+An **account** is a social handle registered so runs can target it. Every [run](/developers/runs) and [schedule](/developers/schedules) names an `account_username`; the platform a run executes against is resolved from this roster **at dispatch**, never from the API caller.
+
+All paths are relative to `<baseUrl>/v1` and require `Authorization: Bearer`. Reads need [`accounts:read`](/developers/scopes); writes need `accounts:write`.
+
+<Note>
+Credentials and proxies are **never** accepted over `/v1` — you register only the handle. Login state and per-account proxies stay on your Mac, where your own connected iPhones execute the work (bring-your-own-fleet).
+</Note>
+
+## Endpoints
+
+| Endpoint | SDK method | Scope |
+|---|---|---|
+| `GET /v1/accounts` | `accounts.list()` | `accounts:read` |
+| `POST /v1/accounts` | `accounts.create(req)` | `accounts:write` |
+
+## Register an account — `POST /v1/accounts`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `platform` | string | yes | One of `tiktok` / `instagram` / `x` / `reddit` / `linkedin`. |
+| `username` | string | yes | 1–64 chars matching `^[A-Za-z0-9._-]{1,64}$`; a leading `@` is stripped server-side. |
+
+Returns `201` with `{ "account": Account }`. A handle already registered on that platform returns `409 conflict`; an invalid platform or username returns `422 invalid_request`.
+
+```ts
+await warmr.accounts.create({ platform: "tiktok", username: "myhandle" });
+```
+
+<Note>
+**X accounts** need one more step: the operator must set the target app in Warmr's Settings on the Mac before X runs will execute. TikTok and Instagram accounts always resolve from the roster. See [Runs → target app resolution](/developers/runs#target-app-resolution).
+</Note>
+
+## List accounts — `GET /v1/accounts`
+
+Returns `{ "accounts": Account[] }`, org-scoped by row-level security — you only ever see your own org's handles.
+
+## The Account object
+
+```jsonc
+{
+  "id": "…",
+  "platform": "tiktok",        // tiktok | instagram | x | reddit | linkedin
+  "username": "myhandle",       // no leading @
+  "device_udid": null,          // set if the account is pinned to a device
+  "created_at": "…"
+}
+```
+
+## Next
+
+- [Runs](/developers/runs) — enqueue a warm_up or post against a registered account.
+- [Content uploads](/developers/content) — stage a clip to post.
+- [SDK quickstart](/developers/sdk-quickstart) — register, enqueue, and post end to end.

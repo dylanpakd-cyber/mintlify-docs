@@ -1,0 +1,104 @@
+---
+title: Authentication
+description: Exchange your wk_live_ API key for a short-lived org session, then call /v1 with a Bearer token. Covers token caching, auto-refresh, and rate limits.
+---
+
+# Authentication
+
+Status: Current (Scale plan).
+
+`/v1` does **not** accept the raw API key. You first **exchange** the `wk_live_…` key for a short-lived **org session** (a Supabase JWT), then call `/v1` with `Authorization: Bearer <access_token>`.
+
+The [SDK](/developers/sdk-quickstart) does this exchange, caches the token, and re-runs it automatically — so most callers never touch the exchange endpoint directly. The details below are for anyone building their own client.
+
+## Getting a key
+
+Mint a `wk_live_…` key in the **Developers** tab of the Warmr app (or the web cockpit at `app.warmr.so`). Minting requires the **Scale plan**, and an org **owner or operator** can do it. You see the raw key **once** — store it in a secret manager.
+
+Key lifecycle (mint, revoke, choose scopes) is a **dashboard-only** action. An API session can call `/v1`, but it can **never mint or revoke keys** — so a leaked key can't escalate itself into more keys. Pick the [scopes](/developers/scopes) the key needs at mint time; a key never gains a scope it wasn't minted with.
+
+## The exchange
+
+You exchange the key at the Supabase edge function, passing the Supabase publishable/anon key in the `apikey` header (the edge function rejects the request without it).
+
+```http
+POST https://<project-ref>.supabase.co/functions/v1/exchange-api-key-for-session
+apikey: <supabase publishable/anon key>     # required by the edge function
+Content-Type: application/json
+
+{ "api_key": "wk_live_…" }
+```
+
+### Response (`200`)
+
+```json
+{
+  "access_token": "eyJ…",
+  "refresh_token": "…",
+  "expires_at": 1751155200,
+  "org_id": "…",
+  "scopes": ["runs:read", "runs:write", "…"],
+  "supabase_url": "https://<project-ref>.supabase.co",
+  "anon_key": "…"
+}
+```
+
+`expires_at` is a **UNIX epoch in seconds**. Cache the `access_token` and re-exchange as it nears expiry — or on any `401` from `/v1`.
+
+<Note>
+The Cloud API is a **Scale-plan** feature. If the org behind your key is not on an active Scale plan, the exchange returns `403 scale_plan_required` — this is the live, authoritative gate on every API session.
+</Note>
+
+### Exchange errors
+
+Exchange errors use a **flat** body, distinct from the `/v1` envelope:
+
+```json
+{ "error": "<code>" }
+```
+
+| `error` | HTTP | Meaning |
+|---|---|---|
+| `missing_api_key` | 400 | No `api_key` in the body. |
+| `invalid_api_key` | 403 | The key is malformed, unknown, or revoked. |
+| `scale_plan_required` | 403 | The org is not on an active Scale plan. |
+| `rate_limited` | 429 | Over an exchange rate limit (see below). |
+| `service_unavailable` | 503 | The exchange backend is not ready. |
+
+## Calling `/v1`
+
+Carry the access token on every `/v1` request:
+
+```http
+GET https://app.warmr.so/v1/runs
+Authorization: Bearer <access_token>
+```
+
+A missing or invalid token returns `401 unauthorized` — re-exchange and retry. See [Scopes](/developers/scopes) for the per-endpoint permission each call requires.
+
+## Token caching and auto-refresh (what the SDK does)
+
+The SDK holds the session token in memory and reuses it until it nears expiry. It re-exchanges automatically:
+
+- **Proactively**, a configurable leeway (default 60 seconds) before `expires_at`.
+- **Reactively**, once on any `401` from `/v1` — it clears the cached session, re-exchanges, and retries the request a single time.
+
+Concurrent calls that both need a fresh token **coalesce** into one exchange, so a burst of requests triggers a single round-trip. Because the token is reused until it expires, normal usage exchanges infrequently.
+
+## Rate limits
+
+### Exchange
+
+- **30 requests / IP / hour** — best-effort, keyed on `x-forwarded-for`.
+- **1000 requests / key / day** — the **binding** limit, keyed on the key's hash.
+
+Over either limit returns `429 rate_limited` on the exchange. Because a session token is reused until it expires, cache it (the SDK does) and you will rarely approach these.
+
+### Enqueue
+
+Enqueue endpoints (`POST /v1/runs`, `POST /v1/runs/batch`) share a per-org limit of **120 runs / minute**. Over the limit returns `429` with the `/v1` error code `rate_limited` and a `Retry-After` header. Every enqueue response (including the `429`) also carries `RateLimit-Limit`, `RateLimit-Remaining`, and `RateLimit-Reset` (seconds) so you can pace client-side before hitting the cap.
+
+## Next
+
+- [Scopes](/developers/scopes) — what each endpoint requires.
+- [SDK quickstart](/developers/sdk-quickstart) — let the SDK handle the exchange for you.

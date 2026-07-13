@@ -1,0 +1,58 @@
+---
+title: Scopes
+description: The full Warmr Cloud API scope list and the endpoints each scope unlocks. Nine default scopes, four opt-in secret-bearing scopes, and a 403 on a missing scope.
+---
+
+# Scopes
+
+Status: Current (Scale plan).
+
+Every `/v1` endpoint requires a **scope** carried by your API key. A call whose key lacks the required scope returns `403 forbidden`.
+
+A newly minted key gets the **default set** below. The **opt-in** scopes must be requested explicitly at mint time. Webhooks and keys are opt-in because they are **secret-bearing surfaces** — a leaked default-scope key should not be able to reroute event deliveries or enumerate credentials.
+
+<Note>
+A key minted before a scope existed does **not** gain it retroactively. Re-mint the key, or update its scopes, to pick up new surfaces.
+</Note>
+
+## Default scopes (9)
+
+Present on every newly minted key.
+
+| Scope | Endpoints |
+|---|---|
+| `runs:read` | `GET /v1/runs`, `GET /v1/runs/{id}`, `GET /v1/schedules/{id}/runs` |
+| `runs:write` | `POST /v1/runs`, `POST /v1/runs/batch`, `POST /v1/runs/{id}/cancel`, `POST /v1/runs/{id}/retry` |
+| `accounts:read` | `GET /v1/accounts` |
+| `accounts:write` | `POST /v1/accounts` |
+| `usage:read` | `GET /v1/usage` |
+| `devices:read` | `GET /v1/devices` |
+| `uploads:write` | `POST /v1/content/uploads`, `POST /v1/content/uploads/confirm` |
+| `schedules:read` | `GET /v1/schedules`, `GET /v1/schedules/{id}` |
+| `schedules:write` | `POST /v1/schedules`, `PATCH /v1/schedules/{id}`, `DELETE /v1/schedules/{id}`, `POST /v1/schedules/{id}/pause`, `POST /v1/schedules/{id}/resume` |
+
+## Opt-in scopes (4)
+
+Secret-bearing. Request them explicitly at mint time.
+
+| Scope | Endpoints |
+|---|---|
+| `webhooks:read` | `GET /v1/webhooks`, `GET /v1/webhooks/{id}/deliveries` |
+| `webhooks:write` | `POST /v1/webhooks`, `PATCH /v1/webhooks/{id}`, `DELETE /v1/webhooks/{id}`, `POST /v1/webhooks/{id}/test`, `POST /v1/webhooks/deliveries/{id}/redrive` |
+| `health:read` | `GET /v1/health` |
+| `keys:read` | `GET /v1/keys` |
+
+## What a missing scope looks like
+
+A call without the required scope returns the standard `/v1` error envelope with code `forbidden`:
+
+```json
+{ "schema": "1.0", "error": { "code": "forbidden", "message": "API key requires the 'webhooks:write' scope." } }
+```
+
+Branch on `error.code`, not on the message.
+
+## Next
+
+- [Authentication](/developers/authentication) — obtain the session your scopes ride on.
+- [Runs](/developers/runs) · [Schedules](/developers/schedules) · [Webhooks](/developers/webhooks) — the endpoint groups behind each scope.

@@ -1,0 +1,53 @@
+---
+title: Developer overview
+description: The Warmr Cloud API — bring-your-own-fleet enqueueing over a REST surface, with a server-side airlock that keeps API sessions off your devices. Scale plan.
+---
+
+# Developer overview
+
+Status: Current (Scale plan).
+
+The **Warmr Cloud API** (`/v1`) is the developer surface for Warmr. It lets you **enqueue** automation work and **read** org-scoped state programmatically. It pairs with the official TypeScript SDK ([`@warmr/sdk`](/developers/sdk-quickstart)) and a machine-readable OpenAPI spec.
+
+The Cloud API is available on the **Scale plan**. A key whose org is not on an active Scale plan cannot exchange for a session, so `/v1` is unreachable without it.
+
+<Note>
+The public base URL is **deployment-specific**. Everywhere you see `https://app.warmr.so`, substitute your Warmr deployment's own origin — it is used here only as a placeholder.
+</Note>
+
+## The bring-your-own-fleet + airlock model
+
+Warmr is **bring-your-own-fleet**. The cloud enqueues; your own hardware executes.
+
+- **An API key enqueues and reads.** A `/v1` call adds a row to the work queue and reads org-scoped data — runs, schedules, accounts, uploads, usage, devices, and (with opt-in scopes) webhooks and keys. That is the whole surface.
+- **Your own connected iPhones execute the work.** The Warmr macOS app and its on-device runner drain the queue and perform the taps. Devices are never provisioned from the cloud.
+- **A server-side airlock keeps an API session off the devices.** The session minted from your API key is marked as an API client. A server-side rail — the "airlock" — rejects that marker from the device-claim path. So an API session can create, list, cancel, and retry runs and read state, but it can **never** claim a device or release a run a device is already executing. Acting on a run a device already owns returns `403 forbidden` or `409 conflict`.
+
+## Org isolation
+
+Isolation is enforced by **row-level security on org membership**. `/v1` never uses a privileged service role at the data layer — every read and write runs under your org session, so you only ever see and touch your own org's rows.
+
+## How the pieces fit
+
+```
+your code ──exchange key──▶ short-lived org session (Bearer JWT)
+    │
+    └── POST /v1/runs ──▶ work queue (a row per run)
+                              │
+       your connected iPhone ─┘  drains the queue and taps
+                              │
+                        webhook ──▶ your endpoint (run.completed / run.failed)
+```
+
+## Where to go next
+
+- [Authentication](/developers/authentication) — exchange your `wk_live_` key for a short-lived org session, and the rate limits that apply.
+- [Scopes](/developers/scopes) — the full scope list and which endpoints each one unlocks.
+- [SDK quickstart](/developers/sdk-quickstart) — install `@warmr/sdk`, register an account, enqueue a run, and post a clip.
+- [Runs](/developers/runs) — the runs resource: enqueue, batch, list, get, cancel, retry.
+- [Schedules](/developers/schedules) — standing recurring cadences over one account's content.
+- [Webhooks](/developers/webhooks) — subscribe to `run.completed` / `run.failed`, and verify signatures.
+
+---
+
+Warmr helps operators make automation work visible, paced, logged, and reviewable. It does not guarantee platform or account outcomes.

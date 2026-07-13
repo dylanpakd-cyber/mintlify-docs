@@ -18,6 +18,11 @@
   "contextual": {
     "options": ["copy", "view", "assistant"]
   },
+  "api": {
+    "playground": {
+      "display": "interactive"
+    }
+  },
   "navigation": {
     "global": {
       "anchors": [
@@ -89,6 +94,33 @@
               "billing/license-key",
               "billing/faq"
             ]
+          }
+        ]
+      },
+      {
+        "tab": "API",
+        "groups": [
+          {
+            "group": "Cloud API",
+            "pages": [
+              "developers/overview",
+              "developers/getting-started",
+              "developers/authentication",
+              "developers/scopes",
+              "developers/sdk-quickstart",
+              "developers/runs",
+              "developers/accounts",
+              "developers/content",
+              "developers/schedules",
+              "developers/webhooks"
+            ]
+          },
+          {
+            "group": "API reference",
+            "openapi": {
+              "source": "api/openapi.yaml",
+              "directory": "api-reference"
+            }
           }
         ]
       }

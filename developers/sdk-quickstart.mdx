@@ -1,0 +1,128 @@
+---
+title: SDK quickstart
+description: Install @warmr/sdk, construct a WarmrClient, register an account, enqueue a warm_up, poll a run, and post a clip with the three-step upload flow.
+---
+
+# SDK quickstart
+
+Status: Current (Scale plan).
+
+`@warmr/sdk` is the official TypeScript SDK for the Warmr Cloud API. It has zero runtime dependencies (it uses the platform `fetch` and Web Crypto), typed methods for every `/v1` route, and it handles the [key → org-session exchange](/developers/authentication) — including caching and automatic refresh — for you.
+
+## Install
+
+```bash
+npm install @warmr/sdk
+```
+
+Requires **Node ≥ 18** (for global `fetch` + Web Crypto), Deno, or Bun.
+
+## Construct a client
+
+```ts
+import { WarmrClient } from "@warmr/sdk";
+
+const warmr = new WarmrClient({
+  apiKey: process.env.WARMR_API_KEY!,                  // "wk_live_…"
+  baseUrl: "https://app.warmr.so",                      // YOUR deployment's /v1 origin
+  exchangeUrl: "https://<ref>.supabase.co/functions/v1/exchange-api-key-for-session",
+  publishableKey: process.env.SUPABASE_PUBLISHABLE_KEY!,
+});
+```
+
+<Note>
+`baseUrl`, `exchangeUrl`, and `publishableKey` are **deployment-specific** and required — there is no canonical public URL baked in. `https://app.warmr.so` is a placeholder; substitute your own origin. If `exchangeUrl` is omitted the SDK falls back to `${baseUrl}/functions/v1/exchange-api-key-for-session`, which is only correct when your `baseUrl` also fronts the Supabase functions. Get these wrong and the first call throws a `WarmrAuthError`.
+</Note>
+
+The first call triggers the exchange; the session token is then cached and re-exchanged automatically as it nears expiry (and once on any `401`).
+
+## Register an account
+
+Register a handle once. Credentials and proxies are **not** accepted here — bring-your-own-fleet keeps those secrets on your Mac.
+
+```ts
+await warmr.accounts.create({ platform: "tiktok", username: "myhandle" });
+```
+
+`platform` is one of `tiktok` / `instagram` / `x` / `reddit` / `linkedin`.
+
+## Enqueue a warmup and poll it
+
+```ts
+// Enqueue — your connected iPhone picks it up.
+const run = await warmr.runs.create({
+  type: "warm_up",
+  account_username: "myhandle",
+});
+console.log(run.run_id, run.status); // e.g. "…", "queued"
+
+// Poll status.
+const latest = await warmr.runs.get(run.run_id);
+```
+
+See [Runs](/developers/runs) for the full run lifecycle, listing, cancel, and retry.
+
+## Post a clip (the three-step flow)
+
+Posting is a signed upload → upload the bytes → confirm → enqueue flow. The SDK does **not** bundle `@supabase/supabase-js`; step 2 uses your own copy to push bytes to the signed URL.
+
+```ts
+import { createClient } from "@supabase/supabase-js"; // your own dep, not bundled
+
+// 1) Ask for a signed upload URL.
+const up = await warmr.content.uploads.create({
+  account_username: "myhandle",
+  filename: "clip.mp4",
+});
+
+// 2) Upload the bytes with the Supabase storage client (uploadToSignedUrl).
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+await supabase.storage.from(up.bucket).uploadToSignedUrl(up.path, up.token, fileBytes);
+
+// 3) Confirm the upload (size_bytes required; checksum optional).
+await warmr.content.uploads.confirm({
+  upload_id: up.upload_id,
+  account_username: "myhandle",
+  filename: "clip.mp4",
+  size_bytes: fileBytes.byteLength,
+});
+
+// 4) Enqueue the post (an idempotency key dedupes the post).
+const post = await warmr.runs.create(
+  {
+    type: "post",
+    account_username: "myhandle",
+    input: { upload_id: up.upload_id, caption: "hello" },
+  },
+  { idempotencyKey: "3f2504e0-4f89-41d3-9a0c-0305e82c3301" }, // must be a UUID
+);
+```
+
+<Note>
+If confirm returns `422 upload_object_missing`, the upload PUT never landed. That error is **recoverable** — re-upload the bytes with the signed URL, then confirm again. If the signed token has expired, re-issue with `content.uploads.create` first.
+</Note>
+
+## Errors
+
+Non-2xx `/v1` responses throw `WarmrApiError` with `.code`, `.message`, `.status`, and optional `.data`. Failed key exchanges throw `WarmrAuthError` with `.code` / `.status`.
+
+```ts
+import { WarmrApiError } from "@warmr/sdk";
+
+try {
+  await warmr.runs.cancel(id);
+} catch (e) {
+  if (e instanceof WarmrApiError && e.code === "conflict") {
+    // The run was already claimed/running — it can't be canceled via the API.
+  }
+}
+```
+
+Common codes: `unauthorized` (401), `forbidden` (403, incl. the airlock and a missing scope), `invalid_request` (400/422), `not_found` (404), `conflict` (409), `source_consumed` (409), `quota_exceeded` (413), `license_inactive` (403), `internal` (500).
+
+## Next
+
+- [Runs](/developers/runs) — enqueue, batch, list, get, cancel, retry.
+- [Schedules](/developers/schedules) — standing recurring cadences.
+- [Webhooks](/developers/webhooks) — subscribe and verify signatures.
+- [Scopes](/developers/scopes) — which scope each method needs.

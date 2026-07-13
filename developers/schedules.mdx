@@ -1,0 +1,108 @@
+---
+title: Schedules
+description: Recurring schedules — a standing cadence over one account's content that a materializer turns into queued runs. Endpoints, SDK methods, and the Schedule object.
+---
+
+# Schedules
+
+Status: Current (Scale plan).
+
+A **schedule** is a standing recurring cadence over **one account's existing content**. A materializer runs **every 5 minutes**, turning each active schedule into **video-only** queued runs spread across its active window; your own runner drains them. Recurrence defaults to `draft` disposition — it is opt-in to live.
+
+All paths are relative to `<baseUrl>/v1` and require `Authorization: Bearer`. Reads need [`schedules:read`](/developers/scopes); writes need `schedules:write`; the schedule's own runs read need `runs:read`.
+
+## Endpoints
+
+| Endpoint | SDK method | Scope |
+|---|---|---|
+| `POST /v1/schedules` | `schedules.create(req)` | `schedules:write` |
+| `GET /v1/schedules` | `schedules.list({ status?, account?, limit? })` | `schedules:read` |
+| `GET /v1/schedules/{id}` | `schedules.get(id)` | `schedules:read` |
+| `PATCH /v1/schedules/{id}` | `schedules.update(id, patch)` | `schedules:write` |
+| `DELETE /v1/schedules/{id}` | `schedules.delete(id)` | `schedules:write` |
+| `POST /v1/schedules/{id}/pause` | `schedules.pause(id)` | `schedules:write` |
+| `POST /v1/schedules/{id}/resume` | `schedules.resume(id)` | `schedules:write` |
+| `GET /v1/schedules/{id}/runs` | `schedules.runs(id, { status?, limit? })` | `runs:read` |
+
+## Create a schedule — `POST /v1/schedules`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `name` | string | yes | 1–120 chars. |
+| `account_username` | string | yes | Must belong to your org, else `404`. |
+| `cadence` | object | no | `{ "kind": "off" }` or `{ "kind": "perDay", "count": 1..12 }`. Default `off`. |
+| `device_udid` | string | no | Pin to an org device (validated); omit for any org device. |
+| `active_start_hour` | int | no | 0–23, default 9. Must be `<` `active_end_hour`. |
+| `active_end_hour` | int | no | 1–24, default 21. |
+| `timezone` | string | no | IANA name (validated), default `UTC`. |
+| `per_day_cap` | int | no | 1–12, default 6 — clamps cadence; a runaway backstop. |
+| `horizon_hours` | int | no | 1–72, default 48. |
+| `default_disposition` | `"draft"` \| `"post_now"` | no | Default `draft`. |
+
+Returns `201` with `{ "schedule": Schedule }`. `422` on an invalid timezone / window / shape; `404` if the account or device is not in your org; `413` if the per-org schedule cap is reached.
+
+```ts
+const schedule = await warmr.schedules.create({
+  name: "Morning drip",
+  account_username: "myhandle",
+  cadence: { kind: "perDay", count: 3 },
+  active_start_hour: 9,
+  active_end_hour: 21,
+  timezone: "America/New_York",
+});
+```
+
+## List / get
+
+`GET /v1/schedules` takes `status`, `account`, `limit` (1–200, default 50) and returns `{ "schedules": Schedule[] }`, newest first. `GET /v1/schedules/{id}` returns `{ "schedule": Schedule }` or `404`.
+
+## Update — `PATCH /v1/schedules/{id}`
+
+The body is the patch. Patchable fields: `name`, `cadence`, `device_udid`, `active_start_hour`, `active_end_hour`, `timezone`, `per_day_cap`, `horizon_hours`, `default_disposition`. Any other key is rejected `422`.
+
+<Note>
+`account_username` is **not patchable** — to retarget a schedule, **delete and recreate** it. `status` is not patchable either — status changes go through **pause / resume / delete**.
+</Note>
+
+## Pause / resume
+
+- **`POST /v1/schedules/{id}/pause`** stops materializing **and cancels the schedule's future queued runs** (claimed/running runs complete), so nothing new fires after you pause.
+- **`POST /v1/schedules/{id}/resume`** sets status back to `active`. It is **forward-only** — slots canceled during the pause are not back-filled.
+
+Each returns `{ "schedule": Schedule }`.
+
+## Delete — `DELETE /v1/schedules/{id}`
+
+A **soft delete**: sets `status=deleted` and cancels future queued runs. Never a hard delete. Returns `{ "schedule_id", "status": "deleted" }`.
+
+## Runs from a schedule — `GET /v1/schedules/{id}/runs`
+
+Query: `status`, `limit`. Returns `{ "runs": Run[] }` — the runs this schedule materialized, newest fire first. Gated on `runs:read` because it returns run data. See the [Run object](/developers/runs#the-run-object).
+
+## The Schedule object
+
+```jsonc
+{
+  "schedule_id": "…",
+  "name": "Morning drip",
+  "account_username": "…",
+  "device_udid": null,
+  "cadence": { "kind": "perDay", "count": 3 },  // kind: "off" | "perDay"; count 1–12
+  "active_start_hour": 9,
+  "active_end_hour": 21,
+  "timezone": "UTC",                              // IANA name
+  "content_source": { "selector": "oldest_ready", "reuse": false, "on_exhaustion": "pause" },
+  "default_disposition": "draft",                 // "draft" | "post_now" (default draft)
+  "per_day_cap": 6,                               // 1–12
+  "horizon_hours": 48,                            // 1–72
+  "status": "active",                             // active | paused | exhausted | deleted
+  "last_materialized_through": null,
+  "created_at": "…",
+  "updated_at": "…"
+}
+```
+
+## Next
+
+- [Runs](/developers/runs) — the runs a schedule produces.
+- [Webhooks](/developers/webhooks) — notifications as those runs complete or fail.

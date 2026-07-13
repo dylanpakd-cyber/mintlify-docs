@@ -1,0 +1,138 @@
+---
+title: Webhooks
+description: Subscribe to run.completed / run.failed events, manage webhooks over the API, and verify HMAC-SHA256 signatures with the SDK. At-least-once delivery with retries.
+---
+
+# Webhooks
+
+Status: Current (Scale plan).
+
+Warmr can POST events to a URL you configure. Webhook management is an **opt-in, secret-bearing** surface: reads need [`webhooks:read`](/developers/scopes), everything else needs `webhooks:write` — neither is on a default key.
+
+## Event types
+
+| Type | When |
+|---|---|
+| `run.completed` | A run finished successfully. |
+| `run.failed` | A run failed. |
+| `webhook.ping` | A test delivery you triggered. |
+
+## Endpoints
+
+| Endpoint | SDK method | Scope |
+|---|---|---|
+| `GET /v1/webhooks` | `webhooks.list()` | `webhooks:read` |
+| `POST /v1/webhooks` | `webhooks.create(req)` | `webhooks:write` |
+| `PATCH /v1/webhooks/{id}` | `webhooks.update(id, patch)` | `webhooks:write` |
+| `DELETE /v1/webhooks/{id}` | `webhooks.delete(id)` | `webhooks:write` |
+| `POST /v1/webhooks/{id}/test` | `webhooks.test(id)` | `webhooks:write` |
+| `GET /v1/webhooks/{id}/deliveries` | `webhooks.deliveries(id, { status?, limit? })` | `webhooks:read` |
+| `POST /v1/webhooks/deliveries/{id}/redrive` | `webhooks.redrive(id)` | `webhooks:write` |
+
+## Create a webhook — `POST /v1/webhooks`
+
+Body: `{ "url", "events"? }`. `url` must be a public `https://` URL — a private, loopback, or link-local host is rejected `422` by an SSRF guard. Returns `201`:
+
+```json
+{
+  "webhook": {
+    "webhook_id": "…",
+    "url": "https://example.com/hook",
+    "events": ["run.completed"],
+    "active": true,
+    "secret": "…"
+  }
+}
+```
+
+<Note>
+**The `secret` is shown exactly once — here.** Store it immediately; no later call (`GET`, `PATCH`) can ever return it. It is the HMAC key for `X-Warmr-Signature`. Deleting the webhook destroys the secret with the row.
+</Note>
+
+- **Omitting `events` subscribes to ALL events.** An explicit `"events": []` is rejected `422` (the empty set means "all", so an empty list is ambiguous — omit the field, or list the events you want).
+- The create response carries no `created_at` / `updated_at`; `GET /v1/webhooks` for timestamps.
+
+```ts
+const wh = await warmr.webhooks.create({
+  url: "https://example.com/hook",
+  events: ["run.completed"],
+});
+save(wh.secret); // shown once, never again
+```
+
+## Update — `PATCH /v1/webhooks/{id}`
+
+Partial update of any of `url`, `events`, `active` (at least one, else `422`). A new `url` is re-checked by the SSRF guard. `"events": []` is rejected `422` — it would silently widen the subscription to all events; **to quiet a webhook, set `"active": false`** instead. Returns `{ "webhook": Webhook }` (never the secret), or `404` if the webhook is not yours.
+
+## Delete — `DELETE /v1/webhooks/{id}`
+
+A **hard delete** — the delivery history cascades and the secret dies with the row (no undo). Returns `{ "webhook_id", "deleted": true }`.
+
+## Test — `POST /v1/webhooks/{id}/test`
+
+Enqueues a signed `webhook.ping` delivery and returns `202` with `{ "delivery_id" }`. **`202` means enqueued, not delivered** — the pump delivers asynchronously; follow the attempt at `GET /v1/webhooks/{id}/deliveries`.
+
+## Redrive — `POST /v1/webhooks/deliveries/{id}/redrive`
+
+Re-queues a **dead** delivery for another attempt.
+
+## Delivery headers and payload
+
+Every delivery carries three headers:
+
+- `X-Warmr-Event` — the event type.
+- `X-Warmr-Event-Id` — a stable id; use it to **dedupe** (delivery is at-least-once).
+- `X-Warmr-Signature` — `sha256=<hmac-sha256(rawBody, secret)>`.
+
+The body:
+
+```json
+{
+  "event_id": "…",
+  "type": "run.completed",
+  "org_id": "…",
+  "created_at": "2026-06-28T00:00:00.000Z",
+  "data": { }
+}
+```
+
+`data` carries the event-specific payload.
+
+## Delivery guarantees
+
+- **At-least-once.** The same event may arrive more than once — dedupe on `X-Warmr-Event-Id`.
+- **Retries.** A failed delivery retries with **exponential backoff + jitter**, up to **5 attempts over 72 hours**.
+- **Delivery status.** A delivery is `pending` while it still has attempts left within the window, then becomes `delivered` on success or `dead` once it exhausts the attempts or the 72-hour window.
+- **HTTPS + public only.** The target URL must be a public `https://` host; the SSRF guard blocks private, loopback, and link-local targets.
+
+## Verify the signature
+
+Recompute the HMAC over the **raw** request body — not the re-serialized JSON, since whitespace and key order must match — and compare in constant time. The SDK's `sdk/src/webhooks.ts` exposes two helpers:
+
+```ts
+import { verifyWebhookSignature, constructWebhookEvent } from "@warmr/sdk/webhooks";
+
+// Express-style handler (rawBody = the exact bytes, e.g. express.raw()).
+const sig = req.header("X-Warmr-Signature");          // "sha256=…"
+const ok = await verifyWebhookSignature(rawBody, sig, process.env.WARMR_WEBHOOK_SECRET!);
+if (!ok) return res.status(400).end();
+
+// Or verify + parse in one step (throws on a bad signature):
+const event = await constructWebhookEvent(rawBody, sig, secret);
+// event.type: "run.completed" | "run.failed" | "webhook.ping"
+```
+
+`verifyWebhookSignature` never throws on a bad or missing header — it returns `false`. `constructWebhookEvent` verifies and then parses, throwing on an invalid signature.
+
+Without the SDK (Node):
+
+```ts
+import crypto from "node:crypto";
+const expected = "sha256=" + crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
+const ok = crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(sig));
+```
+
+## Next
+
+- [Scopes](/developers/scopes) — the `webhooks:read` / `webhooks:write` opt-in.
+- [Runs](/developers/runs) — the runs whose completion these events report.
