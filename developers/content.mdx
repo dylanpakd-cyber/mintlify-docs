@@ -1,0 +1,81 @@
+---
+title: Content uploads
+description: The three-step signed upload flow — issue a signed URL, push the bytes, confirm — that produces an upload_id for a post run.
+---
+
+# Content uploads
+
+Status: Current (Scale plan).
+
+Posting a clip is a **three-step** flow: issue a signed upload URL, push the bytes directly to storage, then confirm. Confirming returns an `upload_id` you hand to a `post` [run](/developers/runs).
+
+Both endpoints need [`uploads:write`](/developers/scopes). The upload PUT in step 2 goes straight to storage with the Supabase storage client — the SDK does **not** bundle `@supabase/supabase-js`, so step 2 uses your own copy.
+
+## Endpoints
+
+| Endpoint | SDK method | Scope |
+|---|---|---|
+| `POST /v1/content/uploads` | `content.uploads.create(req)` | `uploads:write` |
+| `POST /v1/content/uploads/confirm` | `content.uploads.confirm(req)` | `uploads:write` |
+
+## Step 1 — issue a signed URL — `POST /v1/content/uploads`
+
+Body: `{ "account_username", "filename" }` (`filename` is a filename only — no path separators). Returns `201`:
+
+```json
+{
+  "upload_id": "…",
+  "account_username": "myhandle",
+  "filename": "clip.mp4",
+  "bucket": "…",
+  "path": "…",
+  "token": "…"
+}
+```
+
+## Step 2 — upload the bytes
+
+Push the file to the signed URL with the Supabase storage client's `uploadToSignedUrl(path, token, file)`:
+
+```ts
+import { createClient } from "@supabase/supabase-js"; // your own dep, not bundled
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+await supabase.storage.from(up.bucket).uploadToSignedUrl(up.path, up.token, fileBytes);
+```
+
+## Step 3 — confirm — `POST /v1/content/uploads/confirm`
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `upload_id` | string (UUID) | yes | From step 1. |
+| `account_username` | string | yes | Same handle as step 1. |
+| `filename` | string | yes | Same filename as step 1. |
+| `size_bytes` | integer | yes | Byte length of the uploaded file (`≥ 1`). |
+| `checksum_sha256` | string | no | Lowercase 64-hex, or omit. |
+| `storage_path` | string | no | If sent, must equal the `path` from step 1. |
+
+Returns `200` with `{ "upload_id", "status": "synced" }`.
+
+<Note>
+If confirm returns **`422 upload_object_missing`**, the upload PUT never landed. It is **recoverable** — re-upload the bytes to the signed URL, then confirm again. If the signed token has expired, re-issue with step 1 first.
+</Note>
+
+## Then enqueue the post
+
+Hand the `upload_id` to a `post` run — send an `Idempotency-Key` (a UUID) so a retry doesn't double-post:
+
+```ts
+await warmr.runs.create(
+  { type: "post", account_username: "myhandle", input: { upload_id: up.upload_id, caption: "hello" } },
+  { idempotencyKey: "3f2504e0-4f89-41d3-9a0c-0305e82c3301" },
+);
+```
+
+To stage many clips for one account at once, use the [batch endpoint](/developers/runs) — each item's `upload_id` is its idempotency key.
+
+## Next
+
+- [Runs](/developers/runs) — enqueue the post that consumes the `upload_id`.
+- [SDK quickstart](/developers/sdk-quickstart) — the full register → upload → post walkthrough.
+- [Accounts](/developers/accounts) — register the handle a clip posts to.
