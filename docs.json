@@ -129,12 +129,7 @@
     ]
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Developers",
-        "href": "/developers/overview"
-      }
-    ],
+    "links": [],
     "primary": {
       "type": "button",
       "label": "Try Free",
