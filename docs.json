@@ -41,6 +41,7 @@
     "tabs": [
       {
         "tab": "Guide",
+        "icon": "book-open",
         "groups": [
           {
             "group": "Get Started",
@@ -98,7 +99,8 @@
         ]
       },
       {
-        "tab": "API",
+        "tab": "Developers",
+        "icon": "code",
         "groups": [
           {
             "group": "Cloud API",
@@ -127,7 +129,12 @@
     ]
   },
   "navbar": {
-    "links": [],
+    "links": [
+      {
+        "label": "Developers",
+        "href": "/developers/overview"
+      }
+    ],
     "primary": {
       "type": "button",
       "label": "Try Free",
