@@ -6,7 +6,7 @@ description: "Warmr ramps in Instagram accounts and auto-posts Reels, carousels,
 
 import IphoneSetup from '/snippets/iphone-setup.mdx';
 
-Instagram is fully supported for both ramp and auto-posting. Warmr drives the Instagram iOS app with real on-screen taps. No Meta API, no third-party integrations, and no risk of the API-rate-limit bans that affect traditional scheduling tools.
+Instagram is fully supported for both ramp and auto-posting. Warmr drives the Instagram iOS app with real on-screen taps. No Meta API and no third-party integrations, so there are no API keys to manage and no rate limits to work around.
 
 ## What Warmr does on Instagram
 
@@ -47,7 +47,7 @@ You can run up to **8 Instagram accounts** per iPhone, with **3–4 the best-pra
 
 ## Account ramp schedule
 
-Every Instagram account goes through Warmr's ramp schedule before it enters the posting rotation. Posting on a brand-new account is the leading cause of suppressed reach and reduced reach flags.
+Every Instagram account can go through Warmr's ramp schedule before it enters the posting rotation, so a new account is not going from zero to full volume on its first day.
 
 <Steps>
   <Step title="Fresh">
@@ -83,7 +83,7 @@ Instagram ships frequent app updates. When a layout change breaks one of Warmr's
 
 <Steps>
   <Step title="Warmr detects the failed tap">
-    Because Warmr reads the screen in real time, a moved button causes the action to fail and gets restricted immediately.
+    Because Warmr reads the screen in real time, a moved button causes the action to fail rather than tapping the wrong thing, and the run is halted immediately.
   </Step>
   <Step title="A patch ships within 24–48 hours">
     The Warmr team updates the tap map to match the new layout.

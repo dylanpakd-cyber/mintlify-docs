@@ -19,7 +19,7 @@ Warmr uses a slot-based scheduling system. You define the times of day you want 
 
 You assign one or more **time slots** to each account. At each scheduled time, Warmr:
 
-1. Runs ramp activity (scrolling, liking, following) **before** the post to simulate natural pre-posting behaviour
+1. Runs ramp activity (scrolling, liking, following) **before** the post, if you have enabled it for that account
 2. Posts the next piece of content from the account's queue
 3. Runs a second ramp pass **after** the post to replicate how a real user behaves following a publish
 
@@ -65,7 +65,7 @@ Slots are locked as soon as they are claimed, so there is no risk of the same co
 </Note>
 
 <Warning>
-  Accounts that have not matured through ramp are excluded from the posting rotation automatically. Do not attempt to manually trigger posts on ramping accounts. Doing so can result in early bans and will not override Warmr's maturity check.
+  Accounts that have not matured through ramp are excluded from the posting rotation automatically. Manually triggering a post on a ramping account will not override the ramp; shorten or skip the ramp in the account's settings instead.
 </Warning>
 
 For a deeper look at how slots, queues, and rotation interact, see [Scheduling Concepts](/concepts/scheduling). To learn more about uploading content via Cloud Drop, see [Cloud Drop](/concepts/cloud-drop).

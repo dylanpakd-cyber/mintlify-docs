@@ -1,5 +1,5 @@
 ---
-title: "Warmr FAQ: detection, pricing, hardware, and how it compares"
+title: "Warmr FAQ: pricing, hardware, setup, and how it compares"
 sidebarTitle: "FAQ"
 description: "How safe is Warmr for your own accounts, and how does it compare to rack of iPhoness and Android cloud phones? Straight answers on pricing, hardware, proxies, platforms, and what ramp actually does."
 ---
@@ -10,7 +10,7 @@ These are the questions people ask while deciding whether Warmr is right for the
   <Accordion title="How does Warmr keep my own accounts healthy?">
     Warmr drives a real iPhone you own with real on-screen taps on your own accounts — the same actions you'd take by hand, at a human pace. There are no API calls, no emulators, and no headless browsers. It reads the screen from real screenshots (computer vision) rather than injecting into the app, and it wraps every post in genuine ramp activity so posting happens inside a real, active session rather than cold. Ramp actions run in randomized order and timing to stay human-paced rather than robotic.
 
-    The honest part: no tool is undetectable and none can guarantee outcomes — anyone who promises that is not being straight with you. Warmr controls the on-device behavior; you control the network side, which means a dedicated IP per iPhone and a sane posting cadence. The most common cause of flags is not the app, it is a bad or shared proxy. See [How ramp works](/concepts/account-ramp).
+    The honest part: no tool can guarantee reach or follower outcomes, and anyone who promises that is not being straight with you. Warmr controls execution on the device: it performs the actions you schedule, at the pace you set, and logs each one. You control your content, your posting cadence, and your network setup. See [How ramp works](/concepts/account-ramp).
   </Accordion>
 
   <Accordion title="How is Warmr different from rack of iPhoness, GeeLark, or Android cloud phones?">
@@ -18,7 +18,7 @@ These are the questions people ask while deciding whether Warmr is right for the
 
     Compared to the other options:
     - **Rented done-for-you racks** run $2,000+/mo and own the hardware for you, which also means they hold your accounts. Warmr keeps everything on devices you own.
-    - **Unofficial-API or "bot" tools** are the fastest way to the "300-view jail." Warmr never touches unofficial APIs.
+    - **Unofficial-API tools** operate against every platform's terms of service. Warmr does not use them; it drives the real app on a device you own.
     - **Doing it manually** does not scale past a phone or two, which is the problem Warmr exists to solve.
   </Accordion>
 
@@ -34,13 +34,13 @@ These are the questions people ask while deciding whether Warmr is right for the
   </Accordion>
 
   <Accordion title="What hardware do I need, and do I own the iPhones?">
-    You supply and own the iPhones. Warmr requires real, physical iPhones (no emulators, cloud phones, virtual devices, or jailbroken phones, which can get accounts restricted). Your **Mac is the orchestrator**: it connects to each iPhone over a USB cable, which is required at all times (Wi-Fi is not an alternative), and one Mac can drive roughly 10 or more iPhones at once. A powered USB hub is recommended at 6+ devices.
+    You supply and own the iPhones. Warmr requires real, physical iPhones (no emulators, cloud phones, virtual devices, or jailbroken phones). Your **Mac is the orchestrator**: it connects to each iPhone over a USB cable, which is required at all times (Wi-Fi is not an alternative), and one Mac can drive roughly 10 or more iPhones at once. A powered USB hub is recommended at 6+ devices.
 
     Recommended models are iPhone 12 and newer (13, 14, 15, or 16 are ideal) for the fastest runs. The minimum is **iPhone XR** (our verified floor); iPhone 11 also works, just a little slower, and iPhone XS / XS Max run iOS 17 too but are less tested. Older models (iPhone X, 8, 7, SE 1st gen and earlier) and iOS 16 or below are not supported. Warmr runs on **iOS 17 or later with no upper limit**, including iOS 18 and iOS 26. Leave at least 5 GB free per phone. See [iPhones](/setup/iphones).
   </Accordion>
 
   <Accordion title="How many accounts can I run per iPhone?">
-    Up to 8 accounts per platform, but the healthy sweet spot is **3 to 4 accounts per iPhone**. Past about 5 or 6 accounts on a phone, the platform's detection risk climbs and reach tends to drop. If you want to push higher per phone, a stronger network setup (a dedicated SIM per phone) helps. See [Account lifecycle](/concepts/account-lifecycle).
+    Up to 8 accounts per platform, though **3 to 4 accounts per iPhone** is the practical sweet spot. Past 5 or 6 accounts on one device, switching between them eats an increasing share of each session's time, so throughput per phone drops. If you want more accounts, more phones beats more accounts per phone. See [Account lifecycle](/concepts/account-lifecycle).
   </Accordion>
 
   <Accordion title="Do I need proxies? Can I share one IP across phones?">
