@@ -16,7 +16,11 @@
     "eyebrows": "breadcrumbs"
   },
   "contextual": {
-    "options": ["copy", "view", "assistant"]
+    "options": [
+      "copy",
+      "view",
+      "assistant"
+    ]
   },
   "api": {
     "playground": {
@@ -140,5 +144,17 @@
     "socials": {
       "x": "https://x.com/kidpakerot"
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/concepts/warmup",
+      "destination": "/concepts/account-ramp",
+      "permanent": true
+    },
+    {
+      "source": "/concepts/warmup/",
+      "destination": "/concepts/account-ramp",
+      "permanent": true
+    }
+  ]
 }
