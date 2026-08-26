@@ -1,7 +1,7 @@
 {
   "projectType": "saas",
   "projectName": "Warmr",
-  "projectDescription": "Warmr is a Mac app that automates social media account warm-up and scheduled posting to TikTok and Instagram across multiple real iPhones.",
+  "projectDescription": "Warmr is a Mac app that automates social media account ramp and scheduled posting to TikTok and Instagram across multiple real iPhones.",
   "theme": "almond",
   "primaryColor": "#cafa3b",
   "lightColor": "#647c24",
@@ -22,8 +22,8 @@
           {
             "group": "Core Concepts",
             "pages": [
-              "concepts/account-warmup",
-              "concepts/iphone-farm",
+              "concepts/account-ramp",
+              "concepts/account-ramp",
               "concepts/cloud-drop"
             ]
           },
@@ -69,7 +69,7 @@
     ]
   },
   "keyFeatures": [
-    "Automated account warm-up (scroll, like, follow) on real iPhones",
+    "Automated account ramp (scroll, like, follow) on real iPhones",
     "Scheduled auto-posting to TikTok and Instagram",
     "One Mac drives 10+ iPhones simultaneously, up to 8 accounts per platform per iPhone",
     "Cloud Drop: queue content from any device for your Mac to post",

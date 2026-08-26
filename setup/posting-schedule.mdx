@@ -1,10 +1,10 @@
 ---
 title: "Configure Posting Time Slots for Each Account in Warmr"
 sidebarTitle: "Posting Schedule"
-description: "Set time slots for each account and Warmr fills them with queued content, wrapping every post with warmup activity before and after it."
+description: "Set time slots for each account and Warmr fills them with queued content, wrapping every post with ramp activity before and after it."
 ---
 
-Warmr uses a slot-based scheduling system. You define the times of day you want an account to post, and Warmr handles everything else. It pulls content from your queue in order, wraps each post in warmup activity, and locks each slot once it is claimed to prevent double-posting. You do not need to babysit the schedule; once slots are set and content is queued, Warmr runs autonomously.
+Warmr uses a slot-based scheduling system. You define the times of day you want an account to post, and Warmr handles everything else. It pulls content from your queue in order, wraps each post in ramp activity, and locks each slot once it is claimed to prevent double-posting. You do not need to babysit the schedule; once slots are set and content is queued, Warmr runs autonomously.
 
 <iframe
   className="w-full aspect-video rounded-xl"
@@ -19,9 +19,9 @@ Warmr uses a slot-based scheduling system. You define the times of day you want 
 
 You assign one or more **time slots** to each account. At each scheduled time, Warmr:
 
-1. Runs warmup activity (scrolling, liking, following) **before** the post to simulate natural pre-posting behaviour
+1. Runs ramp activity (scrolling, liking, following) **before** the post to simulate natural pre-posting behaviour
 2. Posts the next piece of content from the account's queue
-3. Runs a second warmup pass **after** the post to replicate how a real user behaves following a publish
+3. Runs a second ramp pass **after** the post to replicate how a real user behaves following a publish
 
 Slots are locked as soon as they are claimed, so there is no risk of the same content going out twice even if Warmr restarts mid-session.
 
@@ -61,11 +61,11 @@ Slots are locked as soon as they are claimed, so there is no risk of the same co
 </Tip>
 
 <Note>
-  If no content is queued for a slot, Warmr skips the post for that slot but still runs the warmup activity. Your account stays active and healthy even when the queue is temporarily empty.
+  If no content is queued for a slot, Warmr skips the post for that slot but still runs the ramp activity. Your account stays active and healthy even when the queue is temporarily empty.
 </Note>
 
 <Warning>
-  Accounts that have not matured through warmup are excluded from the posting rotation automatically. Do not attempt to manually trigger posts on warming accounts. Doing so can result in early bans and will not override Warmr's maturity check.
+  Accounts that have not matured through ramp are excluded from the posting rotation automatically. Do not attempt to manually trigger posts on ramping accounts. Doing so can result in early bans and will not override Warmr's maturity check.
 </Warning>
 
 For a deeper look at how slots, queues, and rotation interact, see [Scheduling Concepts](/concepts/scheduling). To learn more about uploading content via Cloud Drop, see [Cloud Drop](/concepts/cloud-drop).

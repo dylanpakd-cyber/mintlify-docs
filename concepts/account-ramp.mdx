@@ -1,0 +1,46 @@
+---
+title: "Account ramp: easing a new account into your posting rotation"
+sidebarTitle: "Account ramp"
+description: "Warmr's ramp schedule spreads a new account's first days of activity and builds posting volume gradually, on a cadence you configure."
+---
+
+A brand-new account has no posting history, and most operators would rather not go from zero to forty posts a day on the same afternoon they set the device up. Warmr's ramp handles that pacing for you: instead of dropping a fresh account straight into your full posting rotation, it eases the account in over a number of days you choose, then hands it to the scheduler at full volume.
+
+The ramp is optional and fully configurable. If you would rather post immediately, you can.
+
+## The four ramp actions
+
+<CardGroup cols={2}>
+  <Card title="Scroll" icon="scroll">
+    Warmr drives your iPhone to scroll the platform's home feed, For You page, or timeline for a set amount of time. Session length and pause durations vary so the schedule isn't identical every day.
+  </Card>
+  <Card title="Like" icon="heart">
+    During scroll sessions, Warmr taps the like button on a proportion of the content it encounters. You set the rate.
+  </Card>
+  <Card title="Follow" icon="user-plus">
+    Warmr follows a small number of accounts per session, paced across the session rather than in a burst.
+  </Card>
+  <Card title="Search" icon="search">
+    Warmr runs keyword searches relevant to your niche, browses the results, and interacts with a subset. This is how you tell the account's recommendation feed what the account is about, which is what makes later scroll sessions relevant.
+  </Card>
+</CardGroup>
+
+## How Warmr sequences these actions
+
+Warmr doesn't run the four actions in a fixed order. Each session is assembled with variation in timing, action mix, and duration, so a rack of devices isn't executing identical scripts in lockstep — which also keeps the sessions from looking like a single scripted loop to you when you read the logs.
+
+## Why physical iPhones
+
+Warmr runs entirely on physical iPhones you own, via on-screen taps. There are no API calls, no browser automation, and no emulators. Two practical consequences: you never hand your logins to a third party or paste an API key anywhere, and the app works through the same interface you do, so it keeps working when a platform changes something an unofficial API would have depended on.
+
+## Ramp activity around each post
+
+The ramp isn't only a first-week phase. Each time Warmr executes a posting slot, you can have it run a short activity session before the post goes out and again afterwards, so an account that posts daily also has daily activity rather than being dormant between uploads. This is configurable per account.
+
+<Tip>
+  Keeping your iPhones running lets Warmr spread activity across the whole day instead of compressing it into the window your Mac happens to be awake.
+</Tip>
+
+<Note>
+  Warmr cannot guarantee reach or follower outcomes, and no tool can. What it controls is execution: it performs the actions you schedule, at the pace you set, and logs each one.
+</Note>

@@ -4,7 +4,7 @@ sidebarTitle: "Install the Runner"
 description: "Install the automation runner once per iPhone using App Store Connect API or Xcode with a free Apple ID, then trust it in iOS settings."
 ---
 
-The Warmr runner is a small helper that lives on each iPhone and lets your Mac drive the device: tapping, scrolling, and posting inside the real apps. **Every iPhone needs the runner installed once before it can warm up or post.** This is the single most important setup step, and the one most people skip.
+The Warmr runner is a small helper that lives on each iPhone and lets your Mac drive the device: tapping, scrolling, and posting inside the real apps. **Every iPhone needs the runner installed once before it can ramp in or post.** This is the single most important setup step, and the one most people skip.
 
 <iframe
   className="w-full aspect-video rounded-xl"
@@ -126,7 +126,7 @@ Apple requires every app installed on an iPhone to be signed. Warmr offers two w
         Open the **Product** menu and click **Test** (`⌘U`). This builds WebDriverAgent (about a minute the first time) and installs the runner on your iPhone.
 
         <Warning>
-          Use **Test (`⌘U`)**, **not** the ▶ Run button (`⌘R`). The Run button installs the app but **not** the automation runner, and then your warmups silently can't connect. This is the #1 cause of "the runner is installed but nothing happens."
+          Use **Test (`⌘U`)**, **not** the ▶ Run button (`⌘R`). The Run button installs the app but **not** the automation runner, and then your ramps silently can't connect. This is the #1 cause of "the runner is installed but nothing happens."
         </Warning>
 
         <Note>
@@ -175,10 +175,10 @@ The first time the runner is installed with a free or personal Apple ID, iOS doe
 
 ## Verify it worked
 
-Back in Warmr's **Devices** panel, the iPhone should now show a green status and a runner-installed badge. The fastest confirmation is to start a short warmup on the device. If it runs, the install is good.
+Back in Warmr's **Devices** panel, the iPhone should now show a green status and a runner-installed badge. The fastest confirmation is to start a short ramp on the device. If it runs, the install is good.
 
 <Check>
-  Runner installed and trusted? You're ready to [add an account](/setup/adding-accounts) and start warming.
+  Runner installed and trusted? You're ready to [add an account](/setup/adding-accounts) and start ramping.
 </Check>
 
 Stuck on any step? See [Setup troubleshooting](/setup/troubleshooting) for the exact fix to each common error.

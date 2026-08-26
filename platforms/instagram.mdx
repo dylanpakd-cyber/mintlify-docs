@@ -1,24 +1,24 @@
 ---
-title: "Instagram Auto-Posting and Account Warmup Using Warmr"
+title: "Instagram Auto-Posting and Account Ramp Using Warmr"
 sidebarTitle: "Instagram"
-description: "Warmr warms up Instagram accounts and auto-posts Reels, carousels, and photos on schedule using real iPhone taps. No API access required."
+description: "Warmr ramps in Instagram accounts and auto-posts Reels, carousels, and photos on schedule using real iPhone taps. No API access required."
 ---
 
 import IphoneSetup from '/snippets/iphone-setup.mdx';
 
-Instagram is fully supported for both warmup and auto-posting. Warmr drives the Instagram iOS app with real on-screen taps. No Meta API, no third-party integrations, and no risk of the API-rate-limit bans that affect traditional scheduling tools.
+Instagram is fully supported for both ramp and auto-posting. Warmr drives the Instagram iOS app with real on-screen taps. No Meta API, no third-party integrations, and no risk of the API-rate-limit bans that affect traditional scheduling tools.
 
 ## What Warmr does on Instagram
 
 <CardGroup cols={3}>
-  <Card title="Warmup" icon="flame">
+  <Card title="Ramp" icon="flame">
     Scrolls the main feed and Reels tab, likes posts, follows accounts, and browses Explore and Search to build a consistent activity pattern.
   </Card>
   <Card title="Auto-Posting" icon="circle-play">
     Uploads Reels, carousels, and single photos; attaches music when applicable; and publishes each post at the scheduled time.
   </Card>
-  <Card title="Keeps Warm" icon="shield-check">
-    Daily warmup activity continues in parallel with the posting rotation. The account never goes dormant between posts.
+  <Card title="Stays active" icon="shield-check">
+    Daily ramp activity continues in parallel with the posting rotation. The account never goes dormant between posts.
   </Card>
 </CardGroup>
 
@@ -45,22 +45,22 @@ You can run up to **8 Instagram accounts** per iPhone, with **3–4 the best-pra
   </Card>
 </CardGroup>
 
-## Account warmup lifecycle
+## Account ramp schedule
 
-Every Instagram account goes through Warmr's warmup lifecycle before it enters the posting rotation. Posting on a cold or fresh account is the leading cause of suppressed reach and shadowban flags.
+Every Instagram account goes through Warmr's ramp schedule before it enters the posting rotation. Posting on a brand-new account is the leading cause of suppressed reach and reduced reach flags.
 
 <Steps>
   <Step title="Fresh">
-    The account is newly added to Warmr. Warmup activity begins immediately; posting is blocked.
+    The account is newly added to Warmr. Ramp activity begins immediately; posting is blocked.
   </Step>
-  <Step title="Warmed up">
+  <Step title="Ramped in">
     Warmr has been running daily scroll, like, follow, and Explore activity. The account is establishing a normal usage history.
   </Step>
   <Step title="Matured">
     The account has reached Warmr's maturity threshold and is cleared to enter the posting rotation.
   </Step>
-  <Step title="Kept warm">
-    Warmup activity continues every day alongside scheduled posting.
+  <Step title="Kept active">
+    Ramp activity continues every day alongside scheduled posting.
   </Step>
   <Step title="Posting">
     Warmr publishes content on your schedule while maintaining daily engagement activity in parallel.
@@ -68,7 +68,7 @@ Every Instagram account goes through Warmr's warmup lifecycle before it enters t
 </Steps>
 
 <Note>
-  Instagram's algorithm favors accounts that engage consistently. Warmr's daily warmup activity (scrolling, liking, following) helps signal that your account is an active human user, improving the reach of every post you publish.
+  Instagram's algorithm favors accounts that engage consistently. Warmr's daily ramp activity (scrolling, liking, following) helps signal that your account is an active human user, improving the reach of every post you publish.
 </Note>
 
 ## Capacity and delivery
@@ -83,7 +83,7 @@ Instagram ships frequent app updates. When a layout change breaks one of Warmr's
 
 <Steps>
   <Step title="Warmr detects the failed tap">
-    Because Warmr reads the screen in real time, a moved button causes the action to fail and gets flagged immediately.
+    Because Warmr reads the screen in real time, a moved button causes the action to fail and gets restricted immediately.
   </Step>
   <Step title="A patch ships within 24–48 hours">
     The Warmr team updates the tap map to match the new layout.
@@ -100,8 +100,8 @@ Instagram ships frequent app updates. When a layout change breaks one of Warmr's
 ## Related concepts
 
 <CardGroup cols={2}>
-  <Card title="Account Warmup" icon="thermometer-sun" href="/concepts/warmup">
-    Understand the warmup lifecycle and how long each stage takes for Instagram accounts.
+  <Card title="Account Ramp" icon="thermometer-sun" href="/concepts/account-ramp">
+    Understand the ramp schedule and how long each stage takes for Instagram accounts.
   </Card>
   <Card title="Scheduling" icon="calendar" href="/concepts/scheduling">
     Configure daily posting slots and manage your content queue across multiple accounts.

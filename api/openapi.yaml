@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Warmr Cloud API
   version: "1.2"
-  summary: Enqueue and read iPhone-fleet automation work (warmups + posts).
+  summary: Enqueue and read iPhone-fleet automation work (ramps + posts).
   description: |
     The business-facing REST surface for Warmr. **Bring-your-own-fleet**: API keys
     *enqueue* work and read org-scoped state; your own connected iPhones *execute* it.

@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "almond",
   "name": "Warmr",
-  "description": "Run your iPhone farm on autopilot. Warmr warms up social accounts and auto-posts to TikTok, Instagram, X, and LinkedIn on schedule.",
+  "description": "Run your rack of iPhones on autopilot. Warmr ramps in social accounts and auto-posts to TikTok, Instagram, X, and LinkedIn on schedule.",
   "colors": {
     "primary": "#cafa3b",
     "light": "#647c24",
@@ -63,7 +63,7 @@
             "group": "Core Concepts",
             "pages": [
               "concepts/account-lifecycle",
-              "concepts/warmup",
+              "concepts/account-ramp",
               "concepts/cloud-drop",
               "concepts/scheduling"
             ]

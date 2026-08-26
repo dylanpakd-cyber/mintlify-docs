@@ -24,14 +24,14 @@ Most setup problems come down to a handful of causes. Find your symptom below an
     1. **Settings → Privacy & Security → Developer Mode → On** (the phone restarts, then tap **Turn On**).
     2. **Settings → General → VPN & Device Management → Developer App** → tap your Apple ID → **Trust** → confirm.
     3. Tap the **WarmrRunner** icon **once** (iOS won't let Warmr launch a developer app you've never opened by hand), then swipe it closed.
-    4. Back in Warmr → **Devices**, the phone goes green. Start a short warmup to confirm.
+    4. Back in Warmr → **Devices**, the phone goes green. Start a short ramp to confirm.
 
     Until you trust the certificate (and Developer Mode is on), iOS kills the runner the instant it launches — which is exactly what "code 45" and "opens then closes" both mean.
 
     **Why it can come back every week (free Apple IDs).** A free Apple ID's signing expires after **7 days**. When it lapses, the runner stops launching again — Warmr's **Devices** tab will say the helper isn't ready. The fix is the same: click **Reinstall** in Warmr, then re-do the **Trust** step above. A **paid Apple Developer account** ($99/yr) signs for a full year, so the runner keeps working without the weekly reinstall — that's the single biggest reason to upgrade once you're using Warmr regularly.
   </Accordion>
 
-  <Accordion title="The runner installed, but warmups can't connect / nothing happens">
+  <Accordion title="The runner installed, but ramps can't connect / nothing happens">
     You almost certainly built with the **▶ Run button (`⌘R`)** instead of **Product → Test (`⌘U`)**. Run installs the app but **not** the automation runner. Open the project in Xcode, select the **WebDriverAgentRunner** scheme, and run **Product → Test (`⌘U`)** again. See [Install the runner](/setup/install-runner).
   </Accordion>
 
@@ -79,7 +79,7 @@ Most setup problems come down to a handful of causes. Find your symptom below an
   </Accordion>
 </AccordionGroup>
 
-## Problems during warmups and posts
+## Problems during ramps and posts
 
 <AccordionGroup>
   <Accordion title="A session sits idle, then stalls: the device shows as standby">
@@ -104,5 +104,5 @@ Most setup problems come down to a handful of causes. Find your symptom below an
 </AccordionGroup>
 
 <Note>
-  When an app changes its layout and a post or warmup action fails, that's not something you fix locally. Warmr ships a patch within 24–48 hours and your Mac app pulls it automatically on its next check-in.
+  When an app changes its layout and a post or ramp action fails, that's not something you fix locally. Warmr ships a patch within 24–48 hours and your Mac app pulls it automatically on its next check-in.
 </Note>

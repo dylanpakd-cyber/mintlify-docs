@@ -57,7 +57,7 @@ const warmr = new WarmrClient({
 // Register a handle once (no credentials or proxies — those stay on your Mac).
 await warmr.accounts.create({ platform: "tiktok", username: "myhandle" });
 
-// Enqueue a warmup — your connected iPhone picks it up.
+// Enqueue a ramp — your connected iPhone picks it up.
 const run = await warmr.runs.create({ type: "warm_up", account_username: "myhandle" });
 console.log(run.run_id, run.status); // e.g. "…", "queued"
 ```
