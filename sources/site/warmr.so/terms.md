@@ -2,7 +2,7 @@
 
 # Terms of Service
 
-Last updated: 21 May 2026
+Last updated: 9 November 2026
 
 These terms are a binding agreement between you and Warmr. By joining the waitlist, installing, or using the Warmr app, you agree to them. If you do not agree, do not use Warmr.
 
@@ -39,7 +39,7 @@ Warmr and all of its software, content, and trademarks are owned by us or our li
 
 ## 7\. Payment, billing, and refunds
 
-Purchases are sold and processed by **Lemon Squeezy, our Merchant of Record**, who handles payment and applicable taxes. Paid plans are billed in advance on the cadence shown at checkout. Refunds, where offered, are handled per our refund policy and Lemon Squeezy's terms.
+Purchases are processed by **Whop, our payment provider**, which runs checkout and billing. Paid plans are billed in advance on the cadence shown at checkout. Refunds, where offered, are handled per our refund policy and Whop's terms.
 
 ## 8\. Beta and changes to the service
 

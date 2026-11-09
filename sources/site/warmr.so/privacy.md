@@ -2,7 +2,7 @@
 
 # Privacy Policy
 
-Last updated: 21 May 2026
+Last updated: 9 November 2026
 
 This policy explains what Warmr collects, why, and the choices you have. It covers both the Warmr website (warmr.so) and the Warmr Mac application.
 
@@ -48,7 +48,7 @@ We use a small set of trusted service providers ("processors") to run Warmr. The
 
 | Provider | Purpose |
 | --- | --- |
-| Lemon Squeezy | Merchant of Record: checkout, payment, tax, and license keys. Lemon Squeezy is the seller of record for purchases and holds your billing details. |
+| Whop | Payment provider: checkout, payment, billing, and license keys. Whop processes purchases and holds your billing details. |
 | Supabase | Authentication and cloud data storage for cloud features. |
 | PostHog | Product and website analytics. |
 | Resend | Transactional email (e.g. license keys, sign-in links). |
