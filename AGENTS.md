@@ -36,7 +36,7 @@ Each row names one check and who acts.
 | Plugged in, with **Trust This Computer** tapped | User taps on the phone |
 | Developer Mode on | User, on the phone |
 | Developer Disk Image mounted | Agent |
-| Signing with the user's own Apple team. A free Apple ID gives 7-day signing, 3 apps per device, 10 App IDs per 7 days and up to 3 devices per ID. A paid account has a 100-device cap that resets at the yearly renewal. | User sets the team in Xcode. Agent checks. |
+| Signing with the user's own Apple team, free or paid account. The limits of each are in Step 2.0 of the prompt. | User sets the team in Xcode. Agent checks. |
 
 #### Install (step 3)
 
@@ -45,17 +45,15 @@ Each row names one check and who acts.
 | Sign in at https://app.warmr.so | User |
 | Download and install the Warmr Mac app | User |
 | Activate the license | User pastes the key into the app, never into chat |
-| Wire up `warmrctl`: run `warmrctl bootstrap`, then `warmrctl setup status` | Agent |
-
-Before `bootstrap` runs, `warmrctl` is not on the `PATH`. Call it by its full path: `/Applications/Warmr.app/Contents/MacOS/warmrctl bootstrap`.
+| Wire up `warmrctl` with `bootstrap`, then check `setup status`. The full commands are in Steps 3.4 and 3.5 of the prompt. | Agent |
 
 #### Per phone (step 4)
 
 | Check | Who acts |
 |---|---|
-| Device visible | Agent |
+| iPhone visible | Agent |
 | Signing identity | Agent |
-| Disk image | Agent |
+| Developer Disk Image mounted | Agent |
 | Runner reachable | Agent |
 | Video stream | User confirms the live screen in the app |
 | Touch | Agent checks UI Automation. The first ramp session proves the taps. |
@@ -74,10 +72,6 @@ Before `bootstrap` runs, `warmrctl` is not on the `PATH`. Call it by its full pa
 - Stop and ask the user whenever a step needs a physical action on the phone.
 - Run the setup in a local Terminal on the Mac that runs Warmr. Never run it over SSH or from a cloud agent.
 
-### MDX safety
-
-This file compiles as MDX. Put every `<UDID>`-style placeholder, every angle bracket and every brace inside inline code or a code block. If you do not, the file fails to parse and `mint validate` prints a `parsing error` line for it. Look for that line: the command can still print success and exit 0.
-
 ## Editing these docs
 
 ### About this project
@@ -95,3 +89,7 @@ This file compiles as MDX. Put every `<UDID>`-style placeholder, every angle bra
 - Use sentence case for headings
 - Bold for UI elements: Click **Settings**
 - Code formatting for file names, commands, paths, and code references
+
+### MDX safety
+
+This file compiles as MDX. Put every `<UDID>`-style placeholder, every angle bracket and every brace inside inline code or a code block. If you do not, the file fails to parse and `mint validate` prints a `parsing error` line for it. Look for that line: the command can still print success and exit 0.
