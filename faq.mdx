@@ -23,14 +23,13 @@ These are the questions people ask while deciding whether Warmr is right for the
   </Accordion>
 
   <Accordion title="Why is Warmr so much cheaper than the alternatives?">
-    Because Warmr is automation **software** for iPhones you already own, not a done-for-you service that rents you hardware. You bring the phones, so you keep the margin. Plans:
+    Warmr is software for iPhones you already own. You keep the phones and the accounts. Plans:
 
-    - **Free** — 7-day full trial, no card, 1 iPhone, 8 accounts.
-    - **Solo** — $40/mo, 1 iPhone, 8 accounts.
-    - **Rack** — $80/mo, 3 iPhones, 24 accounts. The most popular plan for growing operators.
-    - **Scale** — $150/mo, unlimited iPhones and accounts.
+    - **Solo** — $50/mo, 7-day trial. 1 iPhone, unlimited usage, up to 8 accounts per platform, MCP, Cloud Drop 5 GB. No API key.
+    - **Rack** — $150/mo, 7-day trial. Unlimited iPhones and accounts, unlimited Cloud Drop, MCP, and an API key for whitelisting. The usual starting plan.
+    - **Scale** — $999/mo, no trial, 3 spots. Everything in Rack, plus the Scale community (AI UGC and AI workflow skill files, Bluetooth HID) and coaching.
 
-    Yearly billing is two months free. Compare that to rented racks at $2,000+/mo or per-phone tools that charge $99–150 per phone and do not even include proxies. See [Plans](/billing/plans).
+    Compare that to rented racks at $2,000+/mo. See [Plans](/billing/plans).
   </Accordion>
 
   <Accordion title="What hardware do I need, and do I own the iPhones?">
@@ -62,7 +61,11 @@ These are the questions people ask while deciding whether Warmr is right for the
   </Accordion>
 
   <Accordion title="Is there an API I can post through?">
-    There is no public API today, and it is not a near-term commitment, though we may add one in the future. The programmatic surface that exists now is `warmrctl`, a local command-line tool that controls the running Warmr app over a local socket (no network transport), plus an installable agent skill so an AI agent can drive setup. To feed content in programmatically, use [Cloud Drop](/concepts/cloud-drop): drop clips at app.warmr.so from any browser and they queue to the accounts you choose. Worth knowing: posting through a platform's own API typically kills reach, so on-device posting is the point, not a limitation. See [Set up with Claude](/set-up-with-claude).
+    Yes. Rack and Scale include an API key for whitelisting, so your own tools can talk to Warmr. The Cloud API enqueues work and reads your org. Your iPhones still do the taps. See the [developer overview](/developers/overview).
+
+    Solo includes MCP, so an AI agent can talk to Warmr. Solo has no API key.
+
+    `warmrctl` is the local command-line tool for setup. It controls the running Warmr app over a local socket. See [Set up with Claude](/set-up-with-claude). Cloud Drop is still how you queue a clip from a browser. See [Cloud Drop](/concepts/cloud-drop).
   </Accordion>
 
   <Accordion title="How do I get help and onboarding?">

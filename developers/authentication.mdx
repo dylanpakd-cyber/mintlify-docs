@@ -5,7 +5,7 @@ description: Exchange your wk_live_ API key for a short-lived org session, then 
 
 # Authentication
 
-Status: Current (Scale plan).
+Status: Current (Rack and Scale).
 
 `/v1` does **not** accept the raw API key. You first **exchange** the `wk_live_…` key for a short-lived **org session** (a Supabase JWT), then call `/v1` with `Authorization: Bearer <access_token>`.
 
@@ -13,7 +13,7 @@ The [SDK](/developers/sdk-quickstart) does this exchange, caches the token, and 
 
 ## Getting a key
 
-Mint a `wk_live_…` key in the **Developers** tab of the Warmr app (or the web cockpit at `app.warmr.so`). Minting requires the **Scale plan**, and an org **owner or operator** can do it. You see the raw key **once** — store it in a secret manager.
+Mint a `wk_live_…` key in the **Developers** tab of the Warmr app (or the web cockpit at `app.warmr.so`). The API key is included on **Rack** and **Scale**. An org **owner or operator** mints it. You see the raw key **once**. Store it in a secret manager.
 
 Key lifecycle (mint, revoke, choose scopes) is a **dashboard-only** action. An API session can call `/v1`, but it can **never mint or revoke keys** — so a leaked key can't escalate itself into more keys. Pick the [scopes](/developers/scopes) the key needs at mint time; a key never gains a scope it wasn't minted with.
 
@@ -45,10 +45,6 @@ Content-Type: application/json
 
 `expires_at` is a **UNIX epoch in seconds**. Cache the `access_token` and re-exchange as it nears expiry — or on any `401` from `/v1`.
 
-<Note>
-The Cloud API is a **Scale-plan** feature. If the org behind your key is not on an active Scale plan, the exchange returns `403 scale_plan_required` — this is the live, authoritative gate on every API session.
-</Note>
-
 ### Exchange errors
 
 Exchange errors use a **flat** body, distinct from the `/v1` envelope:
@@ -61,7 +57,6 @@ Exchange errors use a **flat** body, distinct from the `/v1` envelope:
 |---|---|---|
 | `missing_api_key` | 400 | No `api_key` in the body. |
 | `invalid_api_key` | 403 | The key is malformed, unknown, or revoked. |
-| `scale_plan_required` | 403 | The org is not on an active Scale plan. |
 | `rate_limited` | 429 | Over an exchange rate limit (see below). |
 | `service_unavailable` | 503 | The exchange backend is not ready. |
 

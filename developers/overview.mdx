@@ -1,15 +1,15 @@
 ---
 title: Developer overview
-description: The Warmr Cloud API — bring-your-own-fleet enqueueing over a REST surface, with a server-side airlock that keeps API sessions off your devices. Scale plan.
+description: The Warmr Cloud API — bring-your-own-fleet enqueueing over a REST surface, with a server-side airlock that keeps API sessions off your devices. Included on Rack and Scale.
 ---
 
 # Developer overview
 
-Status: Current (Scale plan).
+Status: Current (Rack and Scale).
 
 The **Warmr Cloud API** (`/v1`) is the developer surface for Warmr. It lets you **enqueue** automation work and **read** org-scoped state programmatically. It pairs with the official TypeScript SDK ([`@warmr/sdk`](/developers/sdk-quickstart)) and a machine-readable OpenAPI spec.
 
-The Cloud API is available on the **Scale plan**. A key whose org is not on an active Scale plan cannot exchange for a session, so `/v1` is unreachable without it.
+The API key for whitelisting is included on **Rack** and **Scale**. Scale includes everything in Rack, so Scale includes the key. Solo includes MCP, so an agent can talk to Warmr, and Solo has no API key.
 
 <Note>
 The public base URL is **deployment-specific**. Everywhere you see `https://app.warmr.so`, substitute your Warmr deployment's own origin — it is used here only as a placeholder.
