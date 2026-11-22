@@ -1,20 +1,20 @@
 ---
 title: Getting started
-description: Confirm your org is on Scale, mint a wk_live_ key with the right scopes, set the three deployment values, and make your first call. Includes the limits and quota table.
+description: Confirm your org is on Rack or Scale, mint a wk_live_ key with the right scopes, set the three deployment values, and make your first call. Includes the limits table.
 ---
 
 # Getting started
 
-Status: Current (Scale plan).
+Status: Current (Rack and Scale).
 
-This is the shortest path from "I'm on Scale" to a working `/v1` call. The [SDK quickstart](/developers/sdk-quickstart) is the code walkthrough; this page is the access, keys, and limits page.
+This is the shortest path from Rack or Scale to a working `/v1` call. The [SDK quickstart](/developers/sdk-quickstart) is the code walkthrough. This page is the access, keys, and limits page.
 
-## 1. Confirm you're on the Scale plan
+## 1. Confirm you're on Rack or Scale
 
-The Warmr Cloud API is a **Scale-plan** feature. There is nothing to toggle on — being on an active Scale plan *is* the entitlement. The gate is enforced when your key is exchanged for a session: if the org behind the key is not on active Scale, the exchange returns **`403 scale_plan_required`** and `/v1` stays unreachable. See [Authentication](/developers/authentication#the-exchange).
+The API key for whitelisting is included on **Rack** and **Scale**. Scale includes everything in Rack. Solo includes MCP and has no API key. There is nothing to toggle on. An active Rack or Scale plan is the entitlement. See [Authentication](/developers/authentication#the-exchange).
 
 <Note>
-This is the live, authoritative gate on **every** API session — including a key that was minted on Scale and later downgraded. Keep the org on Scale for as long as you call the API.
+Keep the org on Rack or Scale for as long as you call the API. A downgrade off those plans removes API access, including for a key minted earlier.
 </Note>
 
 ## 2. Mint a key and choose its scopes
@@ -64,9 +64,9 @@ console.log(run.run_id, run.status); // e.g. "…", "queued"
 
 To **post a clip**, follow the three-step upload flow ([Content uploads](/developers/content)) to get an `upload_id`, then enqueue a `post` run with it ([Runs](/developers/runs)). Prefer raw HTTP? The exchange and Bearer flow are in [Authentication](/developers/authentication).
 
-## 5. Limits and quotas
+## 5. Limits
 
-These caps are **uniform across API callers** — Scale grants API *access*, not higher caps.
+Solo, Rack, and Scale include unlimited usage. The numbers below are request rate limits, and they are the same for every API caller. Rack and Scale are the plans that include the API key.
 
 | Limit | Value | Applies to |
 |---|---|---|
@@ -75,7 +75,6 @@ These caps are **uniform across API callers** — Scale grants API *access*, not
 | Enqueue | 120 runs / minute / org | `POST /v1/runs` and `POST /v1/runs/batch`; over the cap returns `429` with `Retry-After` + `RateLimit-*` headers. |
 | Batch size | 1–200 items / call | `POST /v1/runs/batch`. |
 | Schedule per-day cap | 1–12, default 6 | Per `POST /v1/schedules` (`horizon_hours` 1–72, default 48). |
-| Plan quota | `413 quota_exceeded` | Posts/runs against the org's monthly plan quota. |
 
 Because a session token is reused until it nears expiry (the SDK caches and re-exchanges automatically), normal usage rarely approaches the exchange limits. Pace enqueues client-side off the `RateLimit-*` headers.
 

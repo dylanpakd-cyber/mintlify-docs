@@ -8,6 +8,9 @@ info:
     *enqueue* work and read org-scoped state; your own connected iPhones *execute* it.
     A server-side **airlock** prevents an API session from ever driving a device.
 
+    The API key for whitelisting is included on Rack and Scale. Scale includes Rack.
+    Solo includes MCP and has no API key.
+
     Auth is a two-step flow: exchange a `wk_live_` API key at the exchange endpoint for a
     short-lived org session, then call `/v1` with `Authorization: Bearer <access_token>`.
 
